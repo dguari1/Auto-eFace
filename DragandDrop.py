@@ -65,7 +65,7 @@ class MainForm(QtWidgets.QMainWindow):
                 icon = QtGui.QIcon(pixmap)
                 item = QtWidgets.QListWidgetItem(url, self.view)
                 item.setIcon(icon)        
-                item.setStatusTip(url)   
+                #item.setStatusTip(url)   
                 
                 
 
