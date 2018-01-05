@@ -18,6 +18,7 @@ from PyQt5.QtCore import QFile, QTextStream
 
 
 from mini_Emotrics import Emotrics
+from settings_window import ShowSettings
 
 
 class PatientPhotograph(object):
@@ -81,6 +82,7 @@ class ThumbNailViewer(QtWidgets.QGraphicsView):
         pixmap = QtGui.QPixmap(scriptDir + os.path.sep + 'include' + os.path.sep + 'drophere.jpg')
         
         self.setPhoto(pixmap)
+        
                
     def setPhoto(self, pixmap = None):
         #this function puts an image in the scece (if pixmap is not None), it
@@ -177,8 +179,32 @@ class window(QtWidgets.QWidget):
     
     def __init__(self):
         super(window, self).__init__()
-        self.setWindowTitle('Auto-eFace')
+        self.setWindowTitle('auto-eFACE')
+        scriptDir = os.path.dirname(os.path.realpath(sys.argv[0]))
+        self.setWindowIcon(QtGui.QIcon(scriptDir + os.path.sep + 'include' +os.path.sep +'icon_color'+ os.path.sep + 'meei_3WR_icon.ico'))
+        #self.setStyleSheet('background:Aliceblue')
+
         
+        self._CalibrationType = 'Iris'  #_CalibrationType can be 'Iris' or 'Manual'
+        self._CalibrationValue = 11.77 #calibration parameter
+        
+        self._ModelName = 'iBUG' #_ModelType can be 'iBUGS' or 'MEE'
+        
+        
+        
+        #Each photogaph will have its own class that stores all the relevant 
+        #information, this class will be updated everytime the user double 
+        #clicks on a Thumbnail viewer element. The report card will be generated 
+        #with the information stored in these elements, so they all have to 
+        #be filled before generating the report card
+        self._Rest = PatientPhotograph()
+        self._SmallSmile = PatientPhotograph()
+        self._LargeSmile = PatientPhotograph()
+        self._EyeBrow = PatientPhotograph()
+        self._EyeClosureGently = PatientPhotograph()
+        self._EyeClosureTight = PatientPhotograph()
+        self._PuckeringLips = PatientPhotograph()
+        self._DentalShow = PatientPhotograph()
         
       
         #initialize the User Interface
@@ -188,6 +214,8 @@ class window(QtWidgets.QWidget):
         scriptDir = os.path.dirname(os.path.realpath(sys.argv[0]))
         
         spacerh = QtWidgets.QWidget(self)
+        
+        
         spacerh.setFixedSize(15,0)
         
         spacerv = QtWidgets.QWidget(self)
@@ -208,9 +236,10 @@ class window(QtWidgets.QWidget):
         
         self.SmallSmile = ThumbNailViewer()
         self.SmallSmile.WidgetName = "SmallSmile"
+        self.SmallSmile.dropped.connect(self.pictureDropped)
         self.SmallSmile.setMinimumWidth(100)
         self.SmallSmile.setMinimumHeight(150)
-        SmallSmileBox = QtWidgets.QGroupBox('Small Smile')
+        SmallSmileBox = QtWidgets.QGroupBox('Best Smile')
         SmallSmileBox.setStyleSheet(self.getStyleSheet(scriptDir + os.path.sep + 'include' + os.path.sep + 'GroupBoxStyle.qss'))
         SmallSmileLayout = QtWidgets.QGridLayout()
         SmallSmileLayout.addWidget(self.SmallSmile,0,0,1,1)
@@ -219,9 +248,10 @@ class window(QtWidgets.QWidget):
         
         self.LargeSmile = ThumbNailViewer()
         self.LargeSmile.WidgetName = "LargeSmile"
+        self.LargeSmile.dropped.connect(self.pictureDropped)
         self.LargeSmile.setMinimumWidth(100)
         self.LargeSmile.setMinimumHeight(150)
-        LargeSmileBox = QtWidgets.QGroupBox('Large Smile')
+        LargeSmileBox = QtWidgets.QGroupBox('Biggest Smile')
         LargeSmileBox.setStyleSheet(self.getStyleSheet(scriptDir + os.path.sep + 'include' + os.path.sep + 'GroupBoxStyle.qss'))
         LargeSmileLayout = QtWidgets.QGridLayout()
         LargeSmileLayout.addWidget(self.LargeSmile,0,0,1,1)
@@ -231,9 +261,10 @@ class window(QtWidgets.QWidget):
         
         self.EyeBrow = ThumbNailViewer()
         self.EyeBrow.WidgetName = "EyeBrow"
+        self.EyeBrow.dropped.connect(self.pictureDropped)
         self.EyeBrow.setMinimumWidth(100)
         self.EyeBrow.setMinimumHeight(150)
-        EyeBrowBox = QtWidgets.QGroupBox('EyeBrow Elevation')
+        EyeBrowBox = QtWidgets.QGroupBox('Brow Elevation')
         EyeBrowBox.setStyleSheet(self.getStyleSheet(scriptDir + os.path.sep + 'include' + os.path.sep + 'GroupBoxStyle.qss'))
         EyeBrowLayout = QtWidgets.QGridLayout()
         EyeBrowLayout.addWidget(self.EyeBrow,0,0,1,1)
@@ -241,11 +272,12 @@ class window(QtWidgets.QWidget):
         
         self.EyeClosureGently = ThumbNailViewer()
         self.EyeClosureGently.WidgetName = "EyeClosureGently"
+        self.EyeClosureGently.dropped.connect(self.pictureDropped)
         self.EyeClosureGently.setMinimumWidth(100)
         self.EyeClosureGently.setMinimumHeight(150)
-        EyeClosureGentlyBox = QtWidgets.QGroupBox('Gently Eye Closure')
-        EyeClosureGentlyBox.setMinimumWidth(100)
-        EyeClosureGentlyBox.setMinimumHeight(150)
+        EyeClosureGentlyBox = QtWidgets.QGroupBox('Gentle Eye Closure')
+#        EyeClosureGentlyBox.setMinimumWidth(100)
+#        EyeClosureGentlyBox.setMinimumHeight(150)
         EyeClosureGentlyBox.setStyleSheet(self.getStyleSheet(scriptDir + os.path.sep + 'include' + os.path.sep + 'GroupBoxStyle.qss'))
         EyeClosureGentlyLayout = QtWidgets.QGridLayout()
         EyeClosureGentlyLayout.addWidget(self.EyeClosureGently,0,0,1,1)
@@ -253,6 +285,7 @@ class window(QtWidgets.QWidget):
         
         self.EyeClosureTight = ThumbNailViewer()
         self.EyeClosureTight.WidgetName = "EyeClosureTight"
+        self.EyeClosureTight.dropped.connect(self.pictureDropped)
         self.EyeClosureTight.setMinimumWidth(100)
         self.EyeClosureTight.setMinimumHeight(150)
         EyeClosureTightBox = QtWidgets.QGroupBox('Tight Eye Closure')
@@ -263,9 +296,10 @@ class window(QtWidgets.QWidget):
         
         self.PuckeringLips = ThumbNailViewer()
         self.PuckeringLips.WidgetName = "PuckeringLips"
+        self.PuckeringLips.dropped.connect(self.pictureDropped)
         self.PuckeringLips.setMinimumWidth(100)
         self.PuckeringLips.setMinimumHeight(150)
-        PuckeringLipsBox = QtWidgets.QGroupBox('Puckering Lips')
+        PuckeringLipsBox = QtWidgets.QGroupBox('Pucker Lips')
         PuckeringLipsBox.setStyleSheet(self.getStyleSheet(scriptDir + os.path.sep + 'include' + os.path.sep + 'GroupBoxStyle.qss'))
         PuckeringLipsLayout = QtWidgets.QGridLayout()
         PuckeringLipsLayout.addWidget(self.PuckeringLips,0,0,1,1)
@@ -273,9 +307,10 @@ class window(QtWidgets.QWidget):
         
         self.DentalShow = ThumbNailViewer()
         self.DentalShow.WidgetName = "DentalShow"
+        self.DentalShow.dropped.connect(self.pictureDropped)
         self.DentalShow.setMinimumWidth(100)
         self.DentalShow.setMinimumHeight(150)
-        DentalShowBox = QtWidgets.QGroupBox('Showing theet')
+        DentalShowBox = QtWidgets.QGroupBox('Show Theet')
         DentalShowBox.setStyleSheet(self.getStyleSheet(scriptDir + os.path.sep + 'include' + os.path.sep + 'GroupBoxStyle.qss'))
         DentalShowLayout = QtWidgets.QGridLayout()
         DentalShowLayout.addWidget(self.DentalShow,0,0,1,1)
@@ -296,31 +331,74 @@ class window(QtWidgets.QWidget):
         
         layout.addWidget(spacerv,0,1,2,1)
         
-        layout.addWidget(SmallSmileBox,0,2,1,1)        
+        layout.addWidget(EyeBrowBox,0,2,1,1)        
         
         layout.addWidget(spacerv,0,3,2,1)
         
-        layout.addWidget(LargeSmileBox,0,4,1,1)       
+        layout.addWidget(EyeClosureGentlyBox,0,4,1,1)       
         
         layout.addWidget(spacerv,0,5,2,1)
         
-        layout.addWidget(EyeBrowBox ,0,6,1,1)  
+        layout.addWidget(EyeClosureTightBox ,0,6,1,1)  
         
         layout.addWidget(spacerh,1,0,1,6)
         
-        layout.addWidget(EyeClosureGentlyBox,2,0,1,1)
+        layout.addWidget(SmallSmileBox,2,0,1,1)
         
-        layout.addWidget(EyeClosureTightBox,2,2,1,1)
+        layout.addWidget(LargeSmileBox,2,2,1,1)
         
         layout.addWidget(PuckeringLipsBox,2,4,1,1)
         
         layout.addWidget(DentalShowBox,2,6,1,1)
         
-        self.setLayout(layout)
         
-
+        
+        
+        #toolbar         
+        loadAction = QtWidgets.QAction('Load images from folder', self)
+        loadAction.setIcon(QtGui.QIcon(scriptDir + os.path.sep + 'include' +os.path.sep +'icon_color'+ os.path.sep + 'load_icon2.png'))
+        #loadAction.triggered.connect(self.load_file)
+        
+        saveAction = QtWidgets.QAction('Save results', self)
+        saveAction.setIcon(QtGui.QIcon(scriptDir + os.path.sep + 'include' +os.path.sep +'icon_color'+ os.path.sep + 'save_icon2.png'))
+        #saveAction.triggered.connect(self.save_results)
+        
+        settingsAction = QtWidgets.QAction('Change settings', self)
+        settingsAction.setIcon(QtGui.QIcon(scriptDir + os.path.sep + 'include' +os.path.sep +'icon_color'+ os.path.sep + 'settings-icon2.png'))
+        settingsAction.triggered.connect(self.settings)
+        
+        ReportAction = QtWidgets.QAction('Generate report', self)
+        ReportAction.setIcon(QtGui.QIcon(scriptDir + os.path.sep + 'include' +os.path.sep +'icon_color'+ os.path.sep + 'report_card.png'))
+        #ReportAction.triggered.connect(self.report_card)
+        
+        exitAction = QtWidgets.QAction('Exit', self)
+        exitAction.setIcon(QtGui.QIcon(scriptDir + os.path.sep + 'include' +os.path.sep +'icon_color'+ os.path.sep + 'exit_icon2.png'))
+        exitAction.triggered.connect(self.close_app)
+        
+        
+        
+        #create the toolbar and add the actions 
+        self.toolBar = QtWidgets.QToolBar(self)
+        self.toolBar.addActions((loadAction, ReportAction, settingsAction,   saveAction,  exitAction))
+        
+        #set the size of each icon to 50x50
+        self.toolBar.setIconSize(QtCore.QSize(50,50))
+        
+        for action in self.toolBar.actions():
+            widget = self.toolBar.widgetForAction(action)
+            widget.setFixedSize(50, 50)
+            
+        self.toolBar.setMinimumSize(self.toolBar.sizeHint())
+        self.toolBar.setStyleSheet('QToolBar{spacing:5px;}')
+        
+        LargeLayout = QtWidgets.QVBoxLayout(self)
+        LargeLayout.addWidget(self.toolBar)
+        LargeLayout.addLayout(layout)
+        self.setLayout(LargeLayout)
+        
         
         self.show()     
+        self.move(QtWidgets.QApplication.desktop().screen().rect().center()- self.rect().center())
         
       
     #this function read the style sheet used to presents the GroupBox, 
@@ -334,9 +412,151 @@ class window(QtWidgets.QWidget):
     
     
     def pictureDropped(self, photograph):
-        print(photograph._name)
-        show_me = Emotrics()
+        #print(photograph._file_name)
+        show_me = Emotrics(photograph._file_name, self._CalibrationType, self._CalibrationValue, self._ModelName)
         show_me.exec_()
+        
+#        if photograph._ID == "Rest":
+#            #the user modified the Rest photo
+#            self._Rest._photo = photograph._photo
+#            self._Rest._file_name = photograph._file_name
+#            self._Rest._name = photograph._name
+#            self._Rest._extension = photograph._extension
+#            self._Rest._ID = photograph._ID
+#            self._Rest._shape = show_me.displayImage._shape
+#            self._Rest._lefteye = show_me.displayImage._lefteye
+#            self._Rest._righteye = show_me.displayImage._righteye
+#            self._Rest._points = show_me.displayImage._points
+#            self._Rest._boundingbox = show_me.displayImage._boundingbox
+#            
+#        elif photograph._ID == "SmallSmile":
+#            #the user modified the small smile photo
+#            self._SmallSmile._photo = photograph._photo
+#            self._SmallSmile._file_name = photograph._file_name
+#            self._SmallSmile._name = photograph._name
+#            self._SmallSmile._extension = photograph._extension
+#            self._SmallSmile._ID = photograph._ID
+#            self._SmallSmile._shape = show_me.displayImage._shape
+#            self._SmallSmile._lefteye = show_me.displayImage._lefteye
+#            self._SmallSmile._righteye = show_me.displayImage._righteye
+#            self._SmallSmile._points = show_me.displayImage._points
+#            self._SmallSmile._boundingbox = show_me.displayImage._boundingbox 
+#            
+#        elif photograph._ID == "LargeSmile":
+#            #the user modified the large smile photo
+#            self._LargeSmile._photo = photograph._photo
+#            self._LargeSmile._file_name = photograph._file_name
+#            self._LargeSmile._name = photograph._name
+#            self._LargeSmile._extension = photograph._extension
+#            self._LargeSmile._ID = photograph._ID
+#            self._LargeSmile._shape = show_me.displayImage._shape
+#            self._LargeSmile._lefteye = show_me.displayImage._lefteye
+#            self._LargeSmile._righteye = show_me.displayImage._righteye
+#            self._LargeSmile._points = show_me.displayImage._points
+#            self._LargeSmile._boundingbox = show_me.displayImage._boundingbox             
+#            
+#        elif photograph._ID == "EyeBrow":
+#            #the user modified the eye brow photo
+#            self._EyeBrow._photo = photograph._photo
+#            self._EyeBrow._file_name = photograph._file_name
+#            self._EyeBrow._name = photograph._name
+#            self._EyeBrow._extension = photograph._extension
+#            self._EyeBrow._ID = photograph._ID
+#            self._EyeBrow._shape = show_me.displayImage._shape
+#            self._EyeBrow._lefteye = show_me.displayImage._lefteye
+#            self._EyeBrow._righteye = show_me.displayImage._righteye
+#            self._EyeBrow._points = show_me.displayImage._points
+#            self._EyeBrow._boundingbox = show_me.displayImage._boundingbox   
+#            
+#        elif photograph._ID == "EyeClosureGently":
+#            #the user modified the gentle eye closure photo
+#            self._EyeClosureGently._photo = photograph._photo
+#            self._EyeClosureGently._file_name = photograph._file_name
+#            self._EyeClosureGently._name = photograph._name
+#            self._EyeClosureGently._extension = photograph._extension
+#            self._EyeClosureGently._ID = photograph._ID
+#            self._EyeClosureGently._shape = show_me.displayImage._shape
+#            self._EyeClosureGently._lefteye = show_me.displayImage._lefteye
+#            self._EyeClosureGently._righteye = show_me.displayImage._righteye
+#            self._EyeClosureGently._points = show_me.displayImage._points
+#            self._EyeClosureGently._boundingbox = show_me.displayImage._boundingbox               
+#     
+#        elif photograph._ID == "EyeClosureTight":
+#            #the user modified the tight eye closure photo
+#            self._EyeClosureTight._photo = photograph._photo
+#            self._EyeClosureTight._file_name = photograph._file_name
+#            self._EyeClosureTight._name = photograph._name
+#            self._EyeClosureTight._extension = photograph._extension
+#            self._EyeClosureTight._ID = photograph._ID
+#            self._EyeClosureTight._shape = show_me.displayImage._shape
+#            self._EyeClosureTight._lefteye = show_me.displayImage._lefteye
+#            self._EyeClosureTight._righteye = show_me.displayImage._righteye
+#            self._EyeClosureTight._points = show_me.displayImage._points
+#            self._EyeClosureTight._boundingbox = show_me.displayImage._boundingbox    
+#            
+#        elif photograph._ID == "PuckeringLips":
+#            #the user modified the puckering lips photo
+#            self._PuckeringLips._photo = photograph._photo
+#            self._PuckeringLips._file_name = photograph._file_name
+#            self._PuckeringLips._name = photograph._name
+#            self._PuckeringLips._extension = photograph._extension
+#            self._PuckeringLips._ID = photograph._ID
+#            self._PuckeringLips._shape = show_me.displayImage._shape
+#            self._PuckeringLips._lefteye = show_me.displayImage._lefteye
+#            self._PuckeringLips._righteye = show_me.displayImage._righteye
+#            self._PuckeringLips._points = show_me.displayImage._points
+#            self._PuckeringLips._boundingbox = show_me.displayImage._boundingbox   
+#            
+#        elif photograph._ID == "DentalShow":
+#            #the user modified the deltal show photo
+#            self._DentalShow._photo = photograph._photo
+#            self._DentalShow._file_name = photograph._file_name
+#            self._DentalShow._name = photograph._name
+#            self._DentalShow._extension = photograph._extension
+#            self._DentalShow._ID = photograph._ID
+#            self._DentalShow._shape = show_me.displayImage._shape
+#            self._DentalShow._lefteye = show_me.displayImage._lefteye
+#            self._DentalShow._righteye = show_me.displayImage._righteye
+#            self._DentalShow._points = show_me.displayImage._points
+#            self._DentalShow._boundingbox = show_me.displayImage._boundingbox   
+    
+    def settings(self):
+        #this new window allows the user to:
+            #1) modify the calibration parameter used to compute all the real-life measurements 
+            #2) Select the model used for landmakr estimation
+        #we send the current values to the window so that the values can be preserved when a new photo is loaded
+        Settings = ShowSettings(self, self._ModelName, self._CalibrationType, self._CalibrationValue)
+        Settings.exec_()
+        
+        #get values from the window and update appropiate parameters 
+        if Settings.tab1._checkBox1.isChecked() == True:
+            self._CalibrationType = 'Iris'
+            self._CalibrationValue = float(Settings.tab1._IrisDiameter_Edit.text())
+        elif Settings.tab1._checkBox2.isChecked() == True:
+            self._CalibrationType = 'Manual'
+            self._CalibrationValue = float(Settings.tab1._Personalized_Edit.text())
+            
+        if Settings.tab2._checkBox2.isChecked() == True:
+            self._ModelName = 'iBUG'
+        elif Settings.tab2._checkBox1.isChecked() == True:
+            self._ModelName = 'MEE'
+            
+
+        
+        
+        
+        
+    def close_app(self):  
+        
+        #ask is the user really wants to close the app
+        choice = QtWidgets.QMessageBox.question(self, 'Message', 
+                            'Do you want to exit?', QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+
+        if choice == QtWidgets.QMessageBox.Yes :
+            self.close()
+            app.exec_()
+        else:
+            pass 
             
 if __name__ == '__main__':
     
@@ -346,9 +566,10 @@ if __name__ == '__main__':
         app = QtWidgets.QApplication.instance()
     
     app.setStyle(QtWidgets.QStyleFactory.create('Cleanlooks'))
+  
         
     GUI = window()
-    #GUI.show()
+    GUI.show()
     app.exec_()
             
             

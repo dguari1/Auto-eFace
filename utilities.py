@@ -142,9 +142,14 @@ def mark_picture(image, shape, circle_left, circle_right, points = None):
     
     #if requested, then draw a two lines to divide the face
     if points is not None:
-        cv2.line(image,points[0],points[1],(0,255,0),2)        
-        cv2.line(image,points[2],points[3],(0,255,0),2)
-        cv2.line(image,points[4],points[5],(0,255,0),2)
+        if h < 1000: #image is small, make lines of 2 pixel
+            cv2.line(image,points[0],points[1],(0,255,0),2)        
+            cv2.line(image,points[2],points[3],(0,255,0),2)
+            cv2.line(image,points[4],points[5],(0,255,0),2)
+        else:
+            cv2.line(image,points[0],points[1],(0,255,0),4)        
+            cv2.line(image,points[2],points[3],(0,255,0),4)
+            cv2.line(image,points[4],points[5],(0,255,0),4)            
 
 
     #draw 68 landmark points
@@ -167,10 +172,17 @@ def mark_picture(image, shape, circle_left, circle_right, points = None):
     
     #draw left iris
     if circle_left[2]>0:
-        cv2.circle(image, 
+        if h < 1000: #image is small, make circle of 1 pixel
+            cv2.circle(image, 
                tuple([int(circle_left[0]),
                int(circle_left[1])]),
                int(circle_left[2]),(0,255,0),1)
+        else:  #image is large, make circle of 2 pixel
+            cv2.circle(image, 
+               tuple([int(circle_left[0]),
+               int(circle_left[1])]),
+               int(circle_left[2]),(0,255,0),2)            
+    
         cv2.circle(image, 
                tuple([int(circle_left[0]),
                int(circle_left[1])]),
@@ -178,10 +190,16 @@ def mark_picture(image, shape, circle_left, circle_right, points = None):
     
     #draw right iris
     if circle_right[2]>0:
-        cv2.circle(image, 
+        if h < 1000: #image is small, make circle of 1 pixel
+            cv2.circle(image, 
                tuple([int(circle_right[0]),
                int(circle_right[1])]),
                int(circle_right[2]),(0,255,0),1)
+        else: #image is large, make circle of 2 pixel
+            cv2.circle(image, 
+               tuple([int(circle_right[0]),
+               int(circle_right[1])]),
+               int(circle_right[2]),(0,255,0),2)
         cv2.circle(image, 
                tuple([int(circle_right[0]),
                int(circle_right[1])]),
@@ -464,9 +482,9 @@ def find_circle_from_points(x,y):
 
 
 
-def save_snaptshot_to_file(image, name):
-    #saving image to file :)
-    cv2.imwrite(name,image)
+#def save_snaptshot_to_file(image, name):
+#    #saving image to file :)
+#    cv2.imwrite(name,image)
     
     
 def save_txt_file(file_name,shape,circle_left,circle_right, boundingbox):
@@ -580,10 +598,11 @@ def save_xls_file(file_name, MeasurementsLeft, MeasurementsRight, MeasurementsDe
     df = pd.DataFrame(fill, index = Index, columns = Columns)
     df.columns = pd.MultiIndex.from_tuples(list(zip(Header,df.columns)))
     
-    df.to_excel(file_no_ext+'.xls',index = True)
+    
+    df.to_excel(file_no_ext+'.xlsx',index = True)
     
 
-def save_xls_file_patient(path,Patient):
+def save_xls_file_patient(path,Patient,CalibrationType,CalibrationValue):
     #saves the facial metrics into a xls file. It works only for a patient (two photos)
     
     
@@ -599,7 +618,7 @@ def save_xls_file_patient(path,Patient):
     
     elements = ['BH', 'MRD1', 'MRD2', 'CE', 'CH', 'SA', 'UVH', 'DS', 'LVH']
     #first photo
-    MeasurementsLeftFirst, MeasurementsRightFirst, MeasurementsDeviation, MeasurementsPercentual = get_measurements_from_data(Patient.FirstPhoto._shape,Patient.FirstPhoto._lefteye,Patient.FirstPhoto._righteye)
+    MeasurementsLeftFirst, MeasurementsRightFirst, MeasurementsDeviation, MeasurementsPercentual = get_measurements_from_data(Patient.FirstPhoto._shape,Patient.FirstPhoto._lefteye,Patient.FirstPhoto._righteye,CalibrationType,CalibrationValue)
     
     BH = np.array([[MeasurementsRightFirst.BrowHeight,MeasurementsLeftFirst.BrowHeight,MeasurementsDeviation.BrowHeight,MeasurementsPercentual.BrowHeight]],dtype=object)
     MRD1 = np.array([[MeasurementsRightFirst.MarginalReflexDistance1, MeasurementsLeftFirst.MarginalReflexDistance1,MeasurementsDeviation.MarginalReflexDistance1,MeasurementsPercentual.MarginalReflexDistance1]], dtype=object)
@@ -617,7 +636,7 @@ def save_xls_file_patient(path,Patient):
             fillFirst = np.append(fillFirst, eval(i), axis = 1)
             
     #Second photo
-    MeasurementsLeftSecond, MeasurementsRightSecond, MeasurementsDeviation, MeasurementsPercentual = get_measurements_from_data(Patient.SecondPhoto._shape,Patient.SecondPhoto._lefteye,Patient.SecondPhoto._righteye)
+    MeasurementsLeftSecond, MeasurementsRightSecond, MeasurementsDeviation, MeasurementsPercentual = get_measurements_from_data(Patient.SecondPhoto._shape,Patient.SecondPhoto._lefteye,Patient.SecondPhoto._righteye,CalibrationType,CalibrationValue)
     
     BH = np.array([[MeasurementsRightSecond.BrowHeight,MeasurementsLeftSecond.BrowHeight,MeasurementsDeviation.BrowHeight,MeasurementsPercentual.BrowHeight]],dtype=object)
     MRD1 = np.array([[MeasurementsRightSecond.MarginalReflexDistance1, MeasurementsLeftSecond.MarginalReflexDistance1,MeasurementsDeviation.MarginalReflexDistance1,MeasurementsPercentual.MarginalReflexDistance1]], dtype=object)
