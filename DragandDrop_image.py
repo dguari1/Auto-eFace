@@ -38,6 +38,9 @@ class PatientPhotograph(object):
         self._points = None
         self._boundingbox = None #this is the facial bounding-box provided by dlib
         self._Tag = '' #this is the tag that goes in the Emotrics window
+        self._OpenEmotrics = True #this informs the main prgram if it should open Emotrics 
+                                  #for landmark localization. Emotrics will be open only 
+                                  #if the user double clikc on a photo
 
 """
 This class is in charge of drawing the picture and the landmarks in the main 
@@ -60,7 +63,8 @@ class ThumbNailViewer(QtWidgets.QGraphicsView):
         self.setResizeAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(227,227,227)))
+        self.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(255,204,204)))
+  
         self.setFrameShape(QtWidgets.QFrame.NoFrame)
         #self.setDragMode(QtWidgets.QGraphicsView.RubberBandDrag)
         
@@ -152,11 +156,12 @@ class ThumbNailViewer(QtWidgets.QGraphicsView):
             for url in event.mimeData().urls():
                 
                 local_address = str(url.toLocalFile())
-                
+
                 file_name,extension = os.path.splitext(local_address)
                 if extension in self._validextensions:
                     event.setDropAction(QtCore.Qt.CopyAction)
                     event.accept()
+                                       
                 else:
                     event.ignore()
         else:
@@ -176,6 +181,56 @@ class ThumbNailViewer(QtWidgets.QGraphicsView):
                     self.setPhoto(pixmap)
                     self._hasImage = True  #indicate that there is an image
                     self._ImageAddress = os.path.normpath(local_address) #store the image address in a class variable
+                    
+                    
+                    #now verify if there is a txt file already avaliable 
+                    if os.path.isfile(file_name+'.txt'):
+                        #if the txt file already exists then the user can inmediatly start working with the data
+                        #put some info in the appropiate place
+                        self.InfoPhotograph._file_name = self._ImageAddress
+                        self.InfoPhotograph._photo = cv2.imread(self._ImageAddress)
+                        
+                        #split the file name from its extension
+                        file_name,extension = os.path.splitext(self.InfoPhotograph._file_name)
+                        delimiter = os.path.sep
+                        name=file_name.split(delimiter)
+                
+                        self.InfoPhotograph._name =  name[-1] #keep only the last portion (the rest is the physical address of the file)
+                        self.InfoPhotograph._extension = extension[1:]
+                        self.InfoPhotograph._ID = self.WidgetName
+                        
+                        if self.WidgetName == "Rest":
+                            self.InfoPhotograph._Tag = "Rest"
+                        elif self.WidgetName == "SmallSmile":
+                            self.InfoPhotograph._Tag = "Best Smile"
+                        elif self.WidgetName == "LargeSmile":
+                            self.InfoPhotograph._Tag = "Biggest Smile"
+                        elif self.WidgetName == "EyeBrow":   
+                            self.InfoPhotograph._Tag = "Brow Elevation"
+                        elif self.WidgetName == "EyeClosureGently":   
+                            self.InfoPhotograph._Tag = "Gentle Eye Closure"
+                        elif self.WidgetName == "EyeClosureTight": 
+                            self.InfoPhotograph._Tag = "Tight Eye Closure"
+                        elif self.WidgetName == "PuckeringLips":    
+                            self.InfoPhotograph._Tag = "Pucker Lips"
+                        elif self.WidgetName == "DentalShow":     
+                            self.InfoPhotograph._Tag = "Show Teeth"
+                
+                        shape,lefteye,righteye,boundingbox = get_info_from_txt(file_name+'.txt')
+                        self.InfoPhotograph._lefteye = lefteye
+                        self.InfoPhotograph._righteye = righteye 
+                        self.InfoPhotograph._shape = shape
+                        self.InfoPhotograph._boundingbox = boundingbox
+                        self.InfoPhotograph._points = None
+                        
+                        #set background green to inform that shape information is already avaliable
+                        self.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(204,255,204)))
+                        
+                        self.InfoPhotograph._OpenEmotrics = False
+                        
+                        
+                        #we now have all the info, emit the information to the main widget
+                        self.dropped.emit(self.InfoPhotograph)    
                     
                 else:
                     event.ignore()
@@ -202,9 +257,15 @@ class ThumbNailViewer(QtWidgets.QGraphicsView):
     def mouseDoubleClickEvent(self, event):
         if self._hasImage:
             event.accept()
+            #the user wants to open Emotrics 
+            #if the landmark information is already avaliable simply open Emotrics
             if self.InfoPhotograph._shape is not None:
+
+                self.InfoPhotograph._OpenEmotrics = True
                 self.dropped.emit(self.InfoPhotograph)  
             else:  
+                #if not, then first estimate it and then open Emotrics 
+                self.InfoPhotograph._OpenEmotrics = True
                 self.Process_File()
                 
         else:
@@ -241,7 +302,7 @@ class ThumbNailViewer(QtWidgets.QGraphicsView):
         elif self.WidgetName == "PuckeringLips":    
             self.InfoPhotograph._Tag = "Pucker Lips"
         elif self.WidgetName == "DentalShow":     
-            self.InfoPhotograph._Tag = "Show Theet"
+            self.InfoPhotograph._Tag = "Show Teeth"
 
         #if the photo was already processed then get the information for the
         #txt file, otherwise process the photo using the landmark ans pupil
@@ -256,6 +317,7 @@ class ThumbNailViewer(QtWidgets.QGraphicsView):
             self.InfoPhotograph._shape = shape
             self.InfoPhotograph._boundingbox = boundingbox
             self.InfoPhotograph._points = None
+            
             
             #we now have all the info, emit the information to the main widget
             self.dropped.emit(self.InfoPhotograph)    
@@ -502,7 +564,7 @@ class window(QtWidgets.QWidget):
         self.DentalShow.dropped.connect(self.pictureDropped)
         self.DentalShow.setMinimumWidth(100)
         self.DentalShow.setMinimumHeight(150)
-        DentalShowBox = QtWidgets.QGroupBox('Show Theet')
+        DentalShowBox = QtWidgets.QGroupBox('Show Teeth')
         DentalShowBox.setStyleSheet(self.getStyleSheet(scriptDir + os.path.sep + 'include' + os.path.sep + 'GroupBoxStyle.qss'))
         DentalShowLayout = QtWidgets.QGridLayout()
         DentalShowLayout.addWidget(self.DentalShow,0,0,1,1)
@@ -612,27 +674,44 @@ class window(QtWidgets.QWidget):
         
         if photograph._ID == "Rest":
             #the user wants to modify the Rest photo
-            
+                       
             #verify that the window is not already open
             if self.show_me_rest is not None: 
                 self.show_me_rest.close() #if it is, close it
                 
-            self.show_me_rest = Emotrics(photograph, self._CalibrationType, self._CalibrationValue)
-            self.show_me_rest.exec_()
-            
-            self._Rest._photo = photograph._photo
-            self._Rest._file_name = photograph._file_name
-            self._Rest._name = photograph._name
-            self._Rest._extension = photograph._extension
-            self._Rest._ID = photograph._ID
-            self._Rest._shape = self.show_me_rest.displayImage._shape
-            self._Rest._lefteye = self.show_me_rest.displayImage._lefteye
-            self._Rest._righteye = self.show_me_rest.displayImage._righteye
-            self._Rest._points = self.show_me_rest.displayImage._points
-            self._Rest._boundingbox = self.show_me_rest.displayImage._boundingbox
-            
-            #the window is now closed, let's remove it from memory 
-            self.show_me_rest = None
+            if photograph._OpenEmotrics is True: #Emotrics should be open 
+                self.show_me_rest = Emotrics(photograph, self._CalibrationType, self._CalibrationValue)
+                self.show_me_rest.exec_()
+                
+                self._Rest._photo = photograph._photo
+                self._Rest._file_name = photograph._file_name
+                self._Rest._name = photograph._name
+                self._Rest._extension = photograph._extension
+                self._Rest._ID = photograph._ID
+                self._Rest._shape = self.show_me_rest.displayImage._shape
+                self._Rest._lefteye = self.show_me_rest.displayImage._lefteye
+                self._Rest._righteye = self.show_me_rest.displayImage._righteye
+                self._Rest._points = self.show_me_rest.displayImage._points
+                self._Rest._boundingbox = self.show_me_rest.displayImage._boundingbox
+                
+                #modify thumbnail view to indicate that landmark position information is now avaliable
+                self.Rest.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(204,255,204)))
+                
+                #the window is now closed, let's remove it from memory 
+                self.show_me_rest = None
+                
+            else:
+                #Emotrics doesn't need to be open, all the information is already avaliable
+                self._Rest._photo = photograph._photo
+                self._Rest._file_name = photograph._file_name
+                self._Rest._name = photograph._name
+                self._Rest._extension = photograph._extension
+                self._Rest._ID = photograph._ID
+                self._Rest._shape = photograph._shape
+                self._Rest._lefteye = photograph._lefteye
+                self._Rest._righteye = photograph._righteye
+                self._Rest._points = photograph._points
+                self._Rest._boundingbox = photograph._boundingbox                
             
         elif photograph._ID == "SmallSmile":
             #the user wants to modify the small smile photo
@@ -640,24 +719,41 @@ class window(QtWidgets.QWidget):
             #verify that the window is not already open
             if self.show_me_smallsmile is not None: 
                 self.show_me_smallsmile.close() #if it is, close it
+            
+            if photograph._OpenEmotrics is True: #Emotrics should be open 
+                self.show_me_smallsmile = Emotrics(photograph, self._CalibrationType, self._CalibrationValue)
+                self.show_me_smallsmile.exec_()
                 
-            self.show_me_smallsmile = Emotrics(photograph, self._CalibrationType, self._CalibrationValue)
-            self.show_me_smallsmile.exec_()
-            
-            
-            self._SmallSmile._photo = photograph._photo
-            self._SmallSmile._file_name = photograph._file_name
-            self._SmallSmile._name = photograph._name
-            self._SmallSmile._extension = photograph._extension
-            self._SmallSmile._ID = photograph._ID
-            self._SmallSmile._shape = self.show_me_smallsmile.displayImage._shape
-            self._SmallSmile._lefteye = self.show_me_smallsmile.displayImage._lefteye
-            self._SmallSmile._righteye = self.show_me_smallsmile.displayImage._righteye
-            self._SmallSmile._points = self.show_me_smallsmile.displayImage._points
-            self._SmallSmile._boundingbox = self.show_me_smallsmile.displayImage._boundingbox 
-            
-            #the window is now closed, let's remove it from memory 
-            self.show_me_smallsmile = None
+                
+                self._SmallSmile._photo = photograph._photo
+                self._SmallSmile._file_name = photograph._file_name
+                self._SmallSmile._name = photograph._name
+                self._SmallSmile._extension = photograph._extension
+                self._SmallSmile._ID = photograph._ID
+                self._SmallSmile._shape = self.show_me_smallsmile.displayImage._shape
+                self._SmallSmile._lefteye = self.show_me_smallsmile.displayImage._lefteye
+                self._SmallSmile._righteye = self.show_me_smallsmile.displayImage._righteye
+                self._SmallSmile._points = self.show_me_smallsmile.displayImage._points
+                self._SmallSmile._boundingbox = self.show_me_smallsmile.displayImage._boundingbox 
+                
+                #modify thumbnail view to indicate that landmark position information is now avaliable
+                self.SmallSmile.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(204,255,204)))
+                
+                #the window is now closed, let's remove it from memory 
+                self.show_me_smallsmile = None
+                
+            else:
+                #Emotrics doesn't need to be open, all the information is already avaliable
+                self._SmallSmile._photo = photograph._photo
+                self._SmallSmile._file_name = photograph._file_name
+                self._SmallSmile._name = photograph._name
+                self._SmallSmile._extension = photograph._extension
+                self._SmallSmile._ID = photograph._ID
+                self._SmallSmile._shape = photograph._shape
+                self._SmallSmile._lefteye = photograph._lefteye
+                self._SmallSmile._righteye = photograph._righteye
+                self._SmallSmile._points = photograph._points
+                self._SmallSmile._boundingbox = photograph._boundingbox                 
             
         elif photograph._ID == "LargeSmile":
             #the user wants to modify the large smile photo
@@ -665,23 +761,40 @@ class window(QtWidgets.QWidget):
             #verify that the window is not already open
             if self.show_me_largesmile is not None: 
                 self.show_me_largesmile.close() #if it is, close it
+
+            if photograph._OpenEmotrics is True: #Emotrics should be open                 
+                self.show_me_largesmile = Emotrics(photograph, self._CalibrationType, self._CalibrationValue)
+                self.show_me_largesmile.exec_()
                 
-            self.show_me_largesmile = Emotrics(photograph, self._CalibrationType, self._CalibrationValue)
-            self.show_me_largesmile.exec_()
-            
-            self._LargeSmile._photo = photograph._photo
-            self._LargeSmile._file_name = photograph._file_name
-            self._LargeSmile._name = photograph._name
-            self._LargeSmile._extension = photograph._extension
-            self._LargeSmile._ID = photograph._ID
-            self._LargeSmile._shape = self.show_me_largesmile.displayImage._shape
-            self._LargeSmile._lefteye = self.show_me_largesmile.displayImage._lefteye
-            self._LargeSmile._righteye = self.show_me_largesmile.displayImage._righteye
-            self._LargeSmile._points = self.show_me_largesmile.displayImage._points
-            self._LargeSmile._boundingbox = self.show_me_largesmile.displayImage._boundingbox   
-            
-            #the window is now closed, let's remove it from memory 
-            self.show_me_largesmile = None
+                self._LargeSmile._photo = photograph._photo
+                self._LargeSmile._file_name = photograph._file_name
+                self._LargeSmile._name = photograph._name
+                self._LargeSmile._extension = photograph._extension
+                self._LargeSmile._ID = photograph._ID
+                self._LargeSmile._shape = self.show_me_largesmile.displayImage._shape
+                self._LargeSmile._lefteye = self.show_me_largesmile.displayImage._lefteye
+                self._LargeSmile._righteye = self.show_me_largesmile.displayImage._righteye
+                self._LargeSmile._points = self.show_me_largesmile.displayImage._points
+                self._LargeSmile._boundingbox = self.show_me_largesmile.displayImage._boundingbox   
+                
+                #modify thumbnail view to indicate that landmark position information is now avaliable
+                self.LargeSmile.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(204,255,204)))
+                
+                #the window is now closed, let's remove it from memory 
+                self.show_me_largesmile = None
+                
+            else:
+                #Emotrics doesn't need to be open, all the information is already avaliable
+                self._LargeSmile._photo = photograph._photo
+                self._LargeSmile._file_name = photograph._file_name
+                self._LargeSmile._name = photograph._name
+                self._LargeSmile._extension = photograph._extension
+                self._LargeSmile._ID = photograph._ID
+                self._LargeSmile._shape = photograph._shape
+                self._LargeSmile._lefteye = photograph._lefteye
+                self._LargeSmile._righteye = photograph._righteye
+                self._LargeSmile._points = photograph._points
+                self._LargeSmile._boundingbox = photograph._boundingbox   
             
         elif photograph._ID == "EyeBrow":
             #the user wants to modify the eye brow photo
@@ -689,23 +802,40 @@ class window(QtWidgets.QWidget):
             #verify that the window is not already open
             if self.show_me_eyebrow is not None: 
                 self.show_me_eyebrow.close() #if it is, close it
+
+            if photograph._OpenEmotrics is True: #Emotrics should be open                    
+                self.show_me_eyebrow = Emotrics(photograph, self._CalibrationType, self._CalibrationValue)
+                self.show_me_eyebrow.exec_()
                 
-            self.show_me_eyebrow = Emotrics(photograph, self._CalibrationType, self._CalibrationValue)
-            self.show_me_eyebrow.exec_()
-            
-            self._EyeBrow._photo = photograph._photo
-            self._EyeBrow._file_name = photograph._file_name
-            self._EyeBrow._name = photograph._name
-            self._EyeBrow._extension = photograph._extension
-            self._EyeBrow._ID = photograph._ID
-            self._EyeBrow._shape = self.show_me_eyebrow.displayImage._shape
-            self._EyeBrow._lefteye = self.show_me_eyebrow.displayImage._lefteye
-            self._EyeBrow._righteye = self.show_me_eyebrow.displayImage._righteye
-            self._EyeBrow._points = self.show_me_eyebrow.displayImage._points
-            self._EyeBrow._boundingbox = self.show_me_eyebrow.displayImage._boundingbox 
-            
-            #the window is now closed, let's remove it from memory 
-            self.show_me_eyebrow = None
+                self._EyeBrow._photo = photograph._photo
+                self._EyeBrow._file_name = photograph._file_name
+                self._EyeBrow._name = photograph._name
+                self._EyeBrow._extension = photograph._extension
+                self._EyeBrow._ID = photograph._ID
+                self._EyeBrow._shape = self.show_me_eyebrow.displayImage._shape
+                self._EyeBrow._lefteye = self.show_me_eyebrow.displayImage._lefteye
+                self._EyeBrow._righteye = self.show_me_eyebrow.displayImage._righteye
+                self._EyeBrow._points = self.show_me_eyebrow.displayImage._points
+                self._EyeBrow._boundingbox = self.show_me_eyebrow.displayImage._boundingbox 
+                
+                #modify thumbnail view to indicate that landmark position information is now avaliable
+                self.EyeBrow.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(204,255,204)))
+                
+                #the window is now closed, let's remove it from memory 
+                self.show_me_eyebrow = None
+                
+            else:
+                #Emotrics doesn't need to be open, all the information is already avaliable                
+                self._EyeBrow._photo = photograph._photo
+                self._EyeBrow._file_name = photograph._file_name
+                self._EyeBrow._name = photograph._name
+                self._EyeBrow._extension = photograph._extension
+                self._EyeBrow._ID = photograph._ID
+                self._EyeBrow._shape = photograph._shape
+                self._EyeBrow._lefteye = photograph._lefteye
+                self._EyeBrow._righteye = photograph._righteye
+                self._EyeBrow._points = photograph._points
+                self._EyeBrow._boundingbox = photograph._boundingbox 
             
         elif photograph._ID == "EyeClosureGently":
             #the user wants to modify the gentle eye closure photo
@@ -713,24 +843,42 @@ class window(QtWidgets.QWidget):
             #verify that the window is not already open
             if self.show_me_eyeclosuregently is not None: 
                 self.show_me_eyeclosuregently.close() #if it is, close it
-                
-            self.show_me_eyeclosuregently = Emotrics(photograph, self._CalibrationType, self._CalibrationValue)
-            self.show_me_eyeclosuregently.exec_()
             
-            self._EyeClosureGently._photo = photograph._photo
-            self._EyeClosureGently._file_name = photograph._file_name
-            self._EyeClosureGently._name = photograph._name
-            self._EyeClosureGently._extension = photograph._extension
-            self._EyeClosureGently._ID = photograph._ID
-            self._EyeClosureGently._shape = self.show_me_eyeclosuregently.displayImage._shape
-            self._EyeClosureGently._lefteye = self.show_me_eyeclosuregently.displayImage._lefteye
-            self._EyeClosureGently._righteye = self.show_me_eyeclosuregently.displayImage._righteye
-            self._EyeClosureGently._points = self.show_me_eyeclosuregently.displayImage._points
-            self._EyeClosureGently._boundingbox = self.show_me_eyeclosuregently.displayImage._boundingbox  
-
-
-            #the window is now closed, let's remove it from memory 
-            self.show_me_eyeclosuregently = None             
+            if photograph._OpenEmotrics is True: #Emotrics should be open  
+                self.show_me_eyeclosuregently = Emotrics(photograph, self._CalibrationType, self._CalibrationValue)
+                self.show_me_eyeclosuregently.exec_()
+                
+                self._EyeClosureGently._photo = photograph._photo
+                self._EyeClosureGently._file_name = photograph._file_name
+                self._EyeClosureGently._name = photograph._name
+                self._EyeClosureGently._extension = photograph._extension
+                self._EyeClosureGently._ID = photograph._ID
+                self._EyeClosureGently._shape = self.show_me_eyeclosuregently.displayImage._shape
+                self._EyeClosureGently._lefteye = self.show_me_eyeclosuregently.displayImage._lefteye
+                self._EyeClosureGently._righteye = self.show_me_eyeclosuregently.displayImage._righteye
+                self._EyeClosureGently._points = self.show_me_eyeclosuregently.displayImage._points
+                self._EyeClosureGently._boundingbox = self.show_me_eyeclosuregently.displayImage._boundingbox  
+                
+                #modify thumbnail view to indicate that landmark position information is now avaliable
+                self.EyeClosureGently.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(204,255,204)))
+    
+    
+                #the window is now closed, let's remove it from memory 
+                self.show_me_eyeclosuregently = None  
+                
+            else:
+                #Emotrics doesn't need to be open, all the information is already avaliable
+                
+                self._EyeClosureGently._photo = photograph._photo
+                self._EyeClosureGently._file_name = photograph._file_name
+                self._EyeClosureGently._name = photograph._name
+                self._EyeClosureGently._extension = photograph._extension
+                self._EyeClosureGently._ID = photograph._ID
+                self._EyeClosureGently._shape = photograph._shape
+                self._EyeClosureGently._lefteye = photograph._lefteye
+                self._EyeClosureGently._righteye = photograph._righteye
+                self._EyeClosureGently._points = photograph._points
+                self._EyeClosureGently._boundingbox = photograph._boundingbox  
      
         elif photograph._ID == "EyeClosureTight":
             #the user wants to modify the tight eye closure photo
@@ -739,22 +887,41 @@ class window(QtWidgets.QWidget):
             if self.show_me_eyeclosuretight is not None: 
                 self.show_me_eyeclosuretight.close() #if it is, close it
                 
-            self.show_me_eyeclosuretight = Emotrics(photograph, self._CalibrationType, self._CalibrationValue)
-            self.show_me_eyeclosuretight.exec_()
             
-            self._EyeClosureTight._photo = photograph._photo
-            self._EyeClosureTight._file_name = photograph._file_name
-            self._EyeClosureTight._name = photograph._name
-            self._EyeClosureTight._extension = photograph._extension
-            self._EyeClosureTight._ID = photograph._ID
-            self._EyeClosureTight._shape = self.show_me_eyeclosuretight.displayImage._shape
-            self._EyeClosureTight._lefteye = self.show_me_eyeclosuretight.displayImage._lefteye
-            self._EyeClosureTight._righteye = self.show_me_eyeclosuretight.displayImage._righteye
-            self._EyeClosureTight._points = self.show_me_eyeclosuretight.displayImage._points
-            self._EyeClosureTight._boundingbox = self.show_me_eyeclosuretight.displayImage._boundingbox    
-            
-            #the window is now closed, let's remove it from memory 
-            self.show_me_eyeclosuretight = None   
+            if photograph._OpenEmotrics is True: #Emotrics should be open                  
+                self.show_me_eyeclosuretight = Emotrics(photograph, self._CalibrationType, self._CalibrationValue)
+                self.show_me_eyeclosuretight.exec_()
+                
+                self._EyeClosureTight._photo = photograph._photo
+                self._EyeClosureTight._file_name = photograph._file_name
+                self._EyeClosureTight._name = photograph._name
+                self._EyeClosureTight._extension = photograph._extension
+                self._EyeClosureTight._ID = photograph._ID
+                self._EyeClosureTight._shape = self.show_me_eyeclosuretight.displayImage._shape
+                self._EyeClosureTight._lefteye = self.show_me_eyeclosuretight.displayImage._lefteye
+                self._EyeClosureTight._righteye = self.show_me_eyeclosuretight.displayImage._righteye
+                self._EyeClosureTight._points = self.show_me_eyeclosuretight.displayImage._points
+                self._EyeClosureTight._boundingbox = self.show_me_eyeclosuretight.displayImage._boundingbox    
+                
+                #modify thumbnail view to indicate that landmark position information is now avaliable
+                self.EyeClosureTight.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(204,255,204)))
+                
+                #the window is now closed, let's remove it from memory 
+                self.show_me_eyeclosuretight = None   
+                
+            else:
+                #Emotrics doesn't need to be open, all the information is already avaliable
+                
+                self._EyeClosureTight._photo = photograph._photo
+                self._EyeClosureTight._file_name = photograph._file_name
+                self._EyeClosureTight._name = photograph._name
+                self._EyeClosureTight._extension = photograph._extension
+                self._EyeClosureTight._ID = photograph._ID
+                self._EyeClosureTight._shape = photograph._shape
+                self._EyeClosureTight._lefteye = photograph._lefteye
+                self._EyeClosureTight._righteye = photograph._righteye
+                self._EyeClosureTight._points = photograph._points
+                self._EyeClosureTight._boundingbox = photograph._boundingbox   
             
         elif photograph._ID == "PuckeringLips":
             #the user wants to modify the puckering lips photo
@@ -763,22 +930,40 @@ class window(QtWidgets.QWidget):
             if self.show_me_puckeringlips is not None: 
                 self.show_me_puckeringlips.close() #if it is, close it
                 
-            self.show_me_puckeringlips = Emotrics(photograph, self._CalibrationType, self._CalibrationValue)
-            self.show_me_puckeringlips.exec_()
-            
-            self._PuckeringLips._photo = photograph._photo
-            self._PuckeringLips._file_name = photograph._file_name
-            self._PuckeringLips._name = photograph._name
-            self._PuckeringLips._extension = photograph._extension
-            self._PuckeringLips._ID = photograph._ID
-            self._PuckeringLips._shape = self.show_me_puckeringlips.displayImage._shape
-            self._PuckeringLips._lefteye = self.show_me_puckeringlips.displayImage._lefteye
-            self._PuckeringLips._righteye = self.show_me_puckeringlips.displayImage._righteye
-            self._PuckeringLips._points = self.show_me_puckeringlips.displayImage._points
-            self._PuckeringLips._boundingbox = self.show_me_puckeringlips.displayImage._boundingbox   
-            
-            #the window is now closed, let's remove it from memory 
-            self.show_me_puckeringlips = None 
+                
+            if photograph._OpenEmotrics is True: #Emotrics should be open      
+                self.show_me_puckeringlips = Emotrics(photograph, self._CalibrationType, self._CalibrationValue)
+                self.show_me_puckeringlips.exec_()
+                
+                self._PuckeringLips._photo = photograph._photo
+                self._PuckeringLips._file_name = photograph._file_name
+                self._PuckeringLips._name = photograph._name
+                self._PuckeringLips._extension = photograph._extension
+                self._PuckeringLips._ID = photograph._ID
+                self._PuckeringLips._shape = self.show_me_puckeringlips.displayImage._shape
+                self._PuckeringLips._lefteye = self.show_me_puckeringlips.displayImage._lefteye
+                self._PuckeringLips._righteye = self.show_me_puckeringlips.displayImage._righteye
+                self._PuckeringLips._points = self.show_me_puckeringlips.displayImage._points
+                self._PuckeringLips._boundingbox = self.show_me_puckeringlips.displayImage._boundingbox   
+                
+                #modify thumbnail view to indicate that landmark position information is now avaliable
+                self.PuckeringLips.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(204,255,204)))
+                
+                #the window is now closed, let's remove it from memory 
+                self.show_me_puckeringlips = None 
+                
+            else:
+                #Emotrics doesn't need to be open, all the information is already avaliable
+                self._PuckeringLips._photo = photograph._photo
+                self._PuckeringLips._file_name = photograph._file_name
+                self._PuckeringLips._name = photograph._name
+                self._PuckeringLips._extension = photograph._extension
+                self._PuckeringLips._ID = photograph._ID
+                self._PuckeringLips._shape = photograph._shape
+                self._PuckeringLips._lefteye = photograph._lefteye
+                self._PuckeringLips._righteye = photograph._righteye
+                self._PuckeringLips._points = photograph._points
+                self._PuckeringLips._boundingbox = photograph._boundingbox 
             
         elif photograph._ID == "DentalShow":
             #the user wants to modify the deltal show photo
@@ -787,24 +972,39 @@ class window(QtWidgets.QWidget):
             if self.show_me_dentalshow is not None: 
                 self.show_me_dentalshow.close() #if it is, close it
                 
-            #self.show_me_deltalshow = None
+            if photograph._OpenEmotrics is True: #Emotrics should be open        
+                self.show_me_dentalshow = Emotrics(photograph, self._CalibrationType, self._CalibrationValue)
+                self.show_me_dentalshow.exec_()
                 
-            self.show_me_dentalshow = Emotrics(photograph, self._CalibrationType, self._CalibrationValue)
-            self.show_me_dentalshow.exec_()
-            
-            self._DentalShow._photo = photograph._photo
-            self._DentalShow._file_name = photograph._file_name
-            self._DentalShow._name = photograph._name
-            self._DentalShow._extension = photograph._extension
-            self._DentalShow._ID = photograph._ID
-            self._DentalShow._shape = self.show_me_dentalshow.displayImage._shape
-            self._DentalShow._lefteye = self.show_me_dentalshow.displayImage._lefteye
-            self._DentalShow._righteye = self.show_me_dentalshow.displayImage._righteye
-            self._DentalShow._points = self.show_me_dentalshow.displayImage._points
-            self._DentalShow._boundingbox = self.show_me_dentalshow.displayImage._boundingbox   
-            
-            #the window is now closed, let's remove it from memory 
-            self.show_me_dentalshow = None
+                self._DentalShow._photo = photograph._photo
+                self._DentalShow._file_name = photograph._file_name
+                self._DentalShow._name = photograph._name
+                self._DentalShow._extension = photograph._extension
+                self._DentalShow._ID = photograph._ID
+                self._DentalShow._shape = self.show_me_dentalshow.displayImage._shape
+                self._DentalShow._lefteye = self.show_me_dentalshow.displayImage._lefteye
+                self._DentalShow._righteye = self.show_me_dentalshow.displayImage._righteye
+                self._DentalShow._points = self.show_me_dentalshow.displayImage._points
+                self._DentalShow._boundingbox = self.show_me_dentalshow.displayImage._boundingbox   
+                
+                #modify thumbnail view to indicate that landmark position information is now avaliable
+                self.DentalShow.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(204,255,204)))
+                
+                #the window is now closed, let's remove it from memory 
+                self.show_me_dentalshow = None
+                
+            else:
+                #Emotrics doesn't need to be open, all the information is already avaliable
+                self._DentalShow._photo = photograph._photo
+                self._DentalShow._file_name = photograph._file_name
+                self._DentalShow._name = photograph._name
+                self._DentalShow._extension = photograph._extension
+                self._DentalShow._ID = photograph._ID
+                self._DentalShow._shape = photograph._shape
+                self._DentalShow._lefteye = photograph._lefteye
+                self._DentalShow._righteye = photograph._righteye
+                self._DentalShow._points = photograph._points
+                self._DentalShow._boundingbox = photograph._boundingbox  
             
     def report_card(self):
         

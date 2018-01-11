@@ -382,7 +382,7 @@ class Emotrics(QtWidgets.QDialog):
             if self.displayImage._shape is not None:
                 MeasurementsLeft, MeasurementsRight, MeasurementsDeviation, MeasurementsPercentual = get_measurements_from_data(self.displayImage._shape, self.displayImage._lefteye, self.displayImage._righteye, self._CalibrationType, self._CalibrationValue)
 #                    
-                temp = SaveWindow(self, self._file_name, MeasurementsLeft, MeasurementsRight, MeasurementsDeviation, MeasurementsPercentual)
+                temp = SaveWindow(self, self._file_name, self._photograph._Tag, MeasurementsLeft, MeasurementsRight, MeasurementsDeviation, MeasurementsPercentual)
                 temp.exec_()    
                 
                 if temp._acceptSave:

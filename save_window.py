@@ -34,7 +34,7 @@ class MyLineEdit(QLineEdit):
 
         
 class SaveWindow(QDialog):
-    def __init__(self, parent=None, file_name = None, MeasurementsLeft = None, MeasurementsRight = None, MeasurementsDeviation = None, MeasurementsPercentual = None):
+    def __init__(self, parent=None, file_name = None, expression='', MeasurementsLeft = None, MeasurementsRight = None, MeasurementsDeviation = None, MeasurementsPercentual = None):
         super(SaveWindow, self).__init__(parent)
         
         self._NewFile = True    #This variable defines if the user is 
@@ -68,7 +68,7 @@ class SaveWindow(QDialog):
         self._ID = photo_name #unique identifier
         self._prevspost = '' #pre-treatment vs post-treatment
         self._surgery = '' #type of surgery
-        self._expression = '' #type of expression
+        self._expression = expression #type of expression
         self._other = '' #additional comments
         self._file_to_save = '' #file to add data 
         
@@ -141,7 +141,7 @@ class SaveWindow(QDialog):
         
         PrevsPost = QLabel('Pre or Post Procedure:')
         self._PrevsPost = QComboBox()
-        self._PrevsPost.setFixedWidth(110)
+        #self._PrevsPost.setFixedWidth(110)
         self._PrevsPost.addItem('')
         self._PrevsPost.addItem('Pre - Procedure')
         self._PrevsPost.addItem('Post - Procedure')
