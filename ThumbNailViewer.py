@@ -223,7 +223,65 @@ class ThumbNailViewer(QtWidgets.QGraphicsView):
 #            InfoPhotograph._extension = extension[1:]
 #            InfoPhotograph._ID = self.WidgetName
 #            
-#            self.dropped.emit(InfoPhotograph)    
+#            self.dropped.emit(InfoPhotograph)  
+            
+    def picture_loaded(self, local_address):
+        
+        pixmap = QtGui.QPixmap(local_address)
+        self.setPhoto(pixmap)
+        self._hasImage = True  #indicate that there is an image
+        self._ImageAddress = os.path.normpath(local_address) #store the image address in a class variable
+        
+        file_name,extension = os.path.splitext(local_address)
+        #now verify if there is a txt file already avaliable 
+        if os.path.isfile(file_name+'.txt'):
+            #if the txt file already exists then the user can inmediatly start working with the data
+            #put some info in the appropiate place
+            self.InfoPhotograph._file_name = self._ImageAddress
+            self.InfoPhotograph._photo = cv2.imread(self._ImageAddress)
+            
+            #split the file name from its extension
+            file_name,extension = os.path.splitext(self.InfoPhotograph._file_name)
+            delimiter = os.path.sep
+            name=file_name.split(delimiter)
+    
+            self.InfoPhotograph._name =  name[-1] #keep only the last portion (the rest is the physical address of the file)
+            self.InfoPhotograph._extension = extension[1:]
+#            self.InfoPhotograph._ID = self.WidgetName
+#            
+#            if self.WidgetName == "Rest":
+#                self.InfoPhotograph._Tag = "Rest"
+#            elif self.WidgetName == "SmallSmile":
+#                self.InfoPhotograph._Tag = "Best Smile"
+#            elif self.WidgetName == "LargeSmile":
+#                self.InfoPhotograph._Tag = "Biggest Smile"
+#            elif self.WidgetName == "EyeBrow":   
+#                self.InfoPhotograph._Tag = "Brow Elevation"
+#            elif self.WidgetName == "EyeClosureGently":   
+#                self.InfoPhotograph._Tag = "Gentle Eye Closure"
+#            elif self.WidgetName == "EyeClosureTight": 
+#                self.InfoPhotograph._Tag = "Tight Eye Closure"
+#            elif self.WidgetName == "PuckeringLips":    
+#                self.InfoPhotograph._Tag = "Pucker Lips"
+#            elif self.WidgetName == "DentalShow":     
+#                self.InfoPhotograph._Tag = "Show Teeth"
+    
+            shape,lefteye,righteye,boundingbox = get_info_from_txt(file_name+'.txt')
+            self.InfoPhotograph._lefteye = lefteye
+            self.InfoPhotograph._righteye = righteye 
+            self.InfoPhotograph._shape = shape
+            self.InfoPhotograph._boundingbox = boundingbox
+            self.InfoPhotograph._points = None
+            
+            #set background green to inform that shape information is already avaliable
+            self.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(204,255,204)))
+            
+            self.InfoPhotograph._OpenEmotrics = False
+            
+            
+            #we now have all the info, emit the information to the main widget
+            self.dropped.emit(self.InfoPhotograph)    
+        
             
             
     def mouseDoubleClickEvent(self, event):

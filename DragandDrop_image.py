@@ -332,6 +332,7 @@ class window(QtWidgets.QWidget):
             Files.sort()
             for file in Files:
                 if '1' in file:
+                    self.Rest.picture_loaded(name)
                     print('found')
     
     
