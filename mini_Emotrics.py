@@ -162,7 +162,7 @@ class Emotrics(QtWidgets.QDialog):
         #create the toolbar and add the actions 
         self.toolBar = QtWidgets.QToolBar(self)
         self.toolBar.addActions((fitAction, eyeAction, eyeLoad,centerAction, toggleAction,
-                                 measuresAction, snapshotAction, saveAction, exitAction))
+                                 measuresAction, saveAction, snapshotAction,  exitAction))
         
         #set the size of each icon to 50x50
         self.toolBar.setIconSize(QtCore.QSize(50,50))

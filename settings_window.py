@@ -167,7 +167,7 @@ class ShowSettings(QtWidgets.QDialog):
         
         self.setWindowTitle('Settings')
         scriptDir = os.getcwd()#os.path.dirname(os.path.realpath(sys.argv[0]))
-        self.setWindowIcon(QtGui.QIcon(scriptDir + os.path.sep + 'include' +os.path.sep +'icon_color'+ os.path.sep + 'settings_icon.ico'))
+        self.setWindowIcon(QtGui.QIcon(scriptDir + os.path.sep + 'include' +os.path.sep +'icon_color'+ os.path.sep + 'settings_icon2.ico'))
         #self.setStyleSheet('background:lightgray')
         
         

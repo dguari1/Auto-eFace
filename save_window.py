@@ -141,7 +141,7 @@ class SaveWindow(QDialog):
         
         PrevsPost = QLabel('Pre or Post Procedure:')
         self._PrevsPost = QComboBox()
-        #self._PrevsPost.setFixedWidth(110)
+        self._PrevsPost.setFixedWidth(200)
         self._PrevsPost.addItem('')
         self._PrevsPost.addItem('Pre - Procedure')
         self._PrevsPost.addItem('Post - Procedure')

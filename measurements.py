@@ -404,7 +404,7 @@ def get_measurements_from_data(shape, left_pupil, right_pupil, CalibrationType, 
     radius=(left_pupil[2]+right_pupil[2])/2
     if CalibrationType == 'Iris': #Iris radius will be used as calibration
         Calibration = CalibrationValue/(2*radius)
-    else:  #user provided calibration radius 
+    else:  #user provided calibration value
         Calibration = CalibrationValue
     
     
