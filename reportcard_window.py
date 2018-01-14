@@ -75,7 +75,7 @@ class ReportCardInit(QDialog):
         
 
 
-        MRN_label = QLabel('Medial Record Number:')
+        MRN_label = QLabel('Medical Record Number:')
         MRN_label.setFont(newfont)
         self._MRN = QLineEdit(self)
         if self._Patient._MRN is not None:

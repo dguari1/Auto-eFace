@@ -81,22 +81,47 @@ def Compute_eFace(Patient):
         
         BrowatRaising =  (LeftEyeBrow.BrowHeight - RightEyeBrow.BrowHeight)/DeltaBrow
     
-        
-    print(Patient._Rest._lefteye)    
+
     #Palpebral Fisure at Rest
-    PalpebralFissureRest = palpebral_fissure(Patient._Rest, Patient._CalibrationType, Patient._CalibrationValue)
-#    if Patient._HealthySide == 'Right':
-#        
-#        DeltaBrow = RightEyeBrow.BrowHeight - RightRest.BrowHeight
-#        
-#        BrowatRest =  (RightRest.BrowHeight - LeftRest.BrowHeight)/DeltaBrow
-#        
-#    elif Patient._HealthySide == 'Left':
-#        
-#        DeltaBrow = LeftEyeBrow.BrowHeight - LeftRest.BrowHeight
-#        
-#        BrowatRest =  (LeftRest.BrowHeight - RightRest.BrowHeight)/DeltaBrow
+    PalpebralFissureRest = palpebral_fissure(Patient._Rest, Patient._CalibrationType, Patient._CalibrationValue) #[Rigth, Left]
+    if Patient._HealthySide == 'Right':
         
-    print(BrowatRest, BrowatRaising,PalpebralFissureRest)
+        DeltaPalpebralFissureRest = PalpebralFissureRest[0] - PalpebralFissureRest[1]
+        
+    elif Patient._HealthySide == 'Left':
+        
+        DeltaPalpebralFissureRest = PalpebralFissureRest[1] - PalpebralFissureRest[0]
+    
+
+    #Oral commisure at rest
+    if Patient._HealthySide == 'Right':
+        
+        DeltaOralCommissure = RightLargeSmile.CommissureExcursion - RightRest.CommissureExcursion
+        
+        OralCommissureatRest = (RightRest.CommissureExcursion - LeftRest.CommissureExcursion)/DeltaOralCommissure
+        
+    elif Patient._HealthySide == 'Left':
+        
+        DeltaOralCommissure = LeftLargeSmile.CommissureExcursion - LeftRest.CommissureExcursion
+        
+        OralCommissureatRest = (LeftRest.CommissureExcursion - RightRest.CommissureExcursion)/DeltaOralCommissure
+
+
+    #Oral commisure with Smile
+    if Patient._HealthySide == 'Right':
+        
+        DeltaOralCommissure = RightLargeSmile.CommissureExcursion - RightRest.CommissureExcursion
+        
+        OralCommissureatSmile = (RightLargeSmile.CommissureExcursion - LeftLargeSmile.CommissureExcursion)/DeltaOralCommissure
+        
+    elif Patient._HealthySide == 'Left':
+        
+        DeltaOralCommissure = LeftLargeSmile.CommissureExcursion - LeftRest.CommissureExcursion
+        
+        OralCommissureatSmile = (LeftLargeSmile.CommissureExcursion - RightLargeSmile.CommissureExcursion)/DeltaOralCommissure
+    
+
+    
+    print(BrowatRest, BrowatRaising,DeltaPalpebralFissureRest, OralCommissureatRest, OralCommissureatSmile)
         
     

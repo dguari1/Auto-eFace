@@ -42,7 +42,11 @@ class PatientPhotograph(object):
         self._OpenEmotrics = True #this informs the main prgram if it should open Emotrics 
                                   #for landmark localization. Emotrics will be open only 
                                   #if the user double clikc on a photo
-                                  
+        self._NewPatient = False #this variable is used to indicate if new photos 
+                                 #from new patients are beeing droped to the app. 
+                                 #In that case, the patient information is removed 
+                                 #so that it wont be shown next time the user 
+                                 #opens the results window 
                                   
 
 
@@ -184,8 +188,6 @@ class window(QtWidgets.QWidget):
         self.EyeClosureGently.setMinimumWidth(100)
         self.EyeClosureGently.setMinimumHeight(150)
         EyeClosureGentlyBox = QtWidgets.QGroupBox('Gentle Eye Closure')
-#        EyeClosureGentlyBox.setMinimumWidth(100)
-#        EyeClosureGentlyBox.setMinimumHeight(150)
         EyeClosureGentlyBox.setStyleSheet(self.getStyleSheet(scriptDir + os.path.sep + 'include' + os.path.sep + 'GroupBoxStyle.qss'))
         EyeClosureGentlyLayout = QtWidgets.QGridLayout()
         EyeClosureGentlyLayout.addWidget(self.EyeClosureGently,0,0,1,1)
@@ -318,8 +320,11 @@ class window(QtWidgets.QWidget):
         f.close()
         return stylesheet
     
+    
+    #this portion has to be updated once we define the tags for each photo
     def load_folder(self):
-        
+        #the user will provide a folder where all the photos are located, these
+        #photos will be loaded onto the corresponding boxes
         name = QtWidgets.QFileDialog.getExistingDirectory(self, 'Select directory')
         
         if not name:
@@ -330,10 +335,92 @@ class window(QtWidgets.QWidget):
             Files = [i for i in Files if i.endswith(tuple(ext))]
             #and sort them
             Files.sort()
+            #let's verify that at least one valid image exists in the folder, if that is the case then we need to clean up the
+            #screen and empty all infor from previous patient from memory
+            new_patient = False #variable that will indicate if any of the images are in the folder, in that case a new patient should be created
+            
+            #Tags used to identify each photo. These tags can be updated later on!!!!!
+            tag_Rest = '1'
+            tag_EyeBrow = '2'
+            tag_EyeClosureGently ='3'
+            tag_EyeClosureTight ='4'
+            tag_SmallSmile = '5'
+            tag_LargeSmile ='6'
+            tag_PuckeringLips ='7'
+            tag_DentalShow ='8'
             for file in Files:
-                if '1' in file:
-                    self.Rest.picture_loaded(name)
-                    print('found')
+                #search for tags in local files. 
+                if tag_Rest in file:
+                    new_patient = True
+                elif tag_EyeBrow in file:
+                    new_patient = True
+                elif tag_EyeClosureGently in file:
+                    new_patient = True
+                elif tag_EyeClosureTight in file:
+                    new_patient = True
+                elif tag_SmallSmile in file:
+                    new_patient = True
+                elif tag_LargeSmile in file:
+                    new_patient = True
+                elif tag_PuckeringLips in file:
+                    new_patient = True
+                elif tag_DentalShow in file:
+                    new_patient = True
+                
+            if new_patient :
+                #reset everything 
+                self._Rest = PatientPhotograph()
+                self._SmallSmile = PatientPhotograph()
+                self._LargeSmile = PatientPhotograph()
+                self._EyeBrow = PatientPhotograph()
+                self._EyeClosureGently = PatientPhotograph()
+                self._EyeClosureTight = PatientPhotograph()
+                self._PuckeringLips = PatientPhotograph()
+                self._DentalShow = PatientPhotograph()
+                               
+                self._Patient = Patient() #this variable contains information about all photos
+                                
+                #these are the windows that will show the Emotris app
+                self.show_me_rest = None
+                self.show_me_smallsmile = None
+                self.show_me_largesmile = None
+                self.show_me_eyebrow = None
+                self.show_me_eyeclosuregently = None
+                self.show_me_eyeclosuretight= None
+                self.show_me_puckeringlips = None
+                self.show_me_dentalshow = None
+                
+                #update with new information located in the folder 
+                for file in Files:
+                    #search for tags in local files. 
+                    if tag_Rest in file:
+                        self.Rest.setBackground()
+                        self.Rest.picture_loaded(name + os.path.sep + file, 'Rest')
+                    elif tag_EyeBrow in file:
+                        self.EyeBrow.setBackground()
+                        self.EyeBrow.picture_loaded(name + os.path.sep + file, 'EyeBrow')
+                    elif tag_EyeClosureGently in file:
+                        self.EyeClosureGently.setBackground()
+                        self.EyeClosureGently.picture_loaded(name + os.path.sep + file, 'EyeClosureGently')
+                    elif tag_EyeClosureTight in file:
+                        self.EyeClosureTight.setBackground()
+                        self.EyeClosureTight.picture_loaded(name + os.path.sep + file, 'EyeClosureTight')
+                    elif tag_SmallSmile in file:
+                        self.SmallSmile.setBackground()
+                        self.SmallSmile.picture_loaded(name + os.path.sep + file, 'SmallSmile')
+                    elif tag_LargeSmile in file:
+                        self.LargeSmile.setBackground()
+                        self.LargeSmile.picture_loaded(name + os.path.sep + file, 'LargeSmile')
+                    elif tag_PuckeringLips in file:
+                        self.PuckeringLips.setBackground()
+                        self.PuckeringLips.picture_loaded(name + os.path.sep + file, 'PuckeringLips')
+                    elif tag_DentalShow in file:
+                        self.DentalShow.setBackground()
+                        self.DentalShow.picture_loaded(name + os.path.sep + file, 'DentalShow')
+                        
+            else:
+                pass
+                                                                       
     
     
     def pictureDropped(self, photograph):
@@ -342,6 +429,11 @@ class window(QtWidgets.QWidget):
 #        show_me.exec_()
 #        
 #        print(photograph._ID)
+        
+        #user if adding photos from new patient, remove informaiton from previous patient
+        if photograph._NewPatient:
+            self._Patient = Patient() #this variable contains information about all photos
+            
         
         if photograph._ID == "Rest":
             #the user wants to modify the Rest photo
@@ -679,10 +771,10 @@ class window(QtWidgets.QWidget):
             
     def report_card(self):
         
-        if self._Rest._photo is None or self._SmallSmile._photo is None or self._LargeSmile._photo is None or self._EyeBrow._photo is None or self._EyeClosureGently._photo is None or self._EyeClosureTight._photo is None or self._DentalShow._photo is None:
+        if self._Rest._shape is None or self._SmallSmile._shape is None or self._LargeSmile._shape is None or self._EyeBrow._shape is None or self._EyeClosureGently._shape is None or self._EyeClosureTight._shape is None or self._DentalShow._shape is None:
             
             QtWidgets.QMessageBox.warning(self,"Warning",
-                    "Landmark information from some images is still missing",
+                    "Landmark information from some images is still missing.\nDouble click in a photograph to estimate the landmarks.",
                         QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.NoButton)
         
         else:
