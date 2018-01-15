@@ -6,18 +6,14 @@ Created on Sat Aug 19 12:54:17 2017
 """
 
 import os
-import cv2
-import numpy as np
 import time
-import sys
+
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, QGridLayout, QFileDialog, QDialog, QComboBox
+from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, QGridLayout, QDialog, QComboBox
 
-
-from utilities import get_info_from_txt
-from Compute_eFace import Compute_eFace
+from Compute_eFace import ReportCard
 
 
 """
@@ -38,10 +34,10 @@ class MyLineEdit(QLineEdit):
         
 class ReportCardInit(QDialog):
     
-    def __init__(self, parent,Patient):
-        super(ReportCardInit, self).__init__(parent)
+    def __init__(self,Patient):
+        super(ReportCardInit, self).__init__()
         
-        self.parent = parent
+        #self.parent = parent
         
         self._Patient = Patient
         
@@ -52,6 +48,11 @@ class ReportCardInit(QDialog):
         self.setWindowTitle('Report Card')
         scriptDir = os.getcwd()#os.path.dirname(os.path.realpath(__file__))
         self.setWindowIcon(QtGui.QIcon(scriptDir + os.path.sep + 'include' +os.path.sep +'icon_color'+ os.path.sep + 'report_card.ico'))
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        self.setWindowFlags(self.windowFlags() |
+                              QtCore.Qt.WindowSystemMenuHint |
+                              QtCore.Qt.WindowMinMaxButtonsHint)
+        
         
         self.main_Widget = QtWidgets.QWidget(self)
         
@@ -167,8 +168,9 @@ class ReportCardInit(QDialog):
                         "Cannot proceed without selecting the healthy side of the face",
                             QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.NoButton)
         else:
-            
-            Compute_eFace(self._Patient)
+
+            Report = ReportCard(self._Patient)
+            Report.exec_()
             self.close()
 
        

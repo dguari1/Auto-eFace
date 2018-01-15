@@ -23,6 +23,7 @@ from settings_window import ShowSettings
 #from ProcessLandmarks import GetLandmarks
 from ThumbNailViewer import ThumbNailViewer
 from reportcard_window import ReportCardInit
+from Compute_eFace import ReportCard
 
 class PatientPhotograph(object):
     
@@ -326,6 +327,7 @@ class window(QtWidgets.QWidget):
         #the user will provide a folder where all the photos are located, these
         #photos will be loaded onto the corresponding boxes
         name = QtWidgets.QFileDialog.getExistingDirectory(self, 'Select directory')
+        
         
         if not name:
             pass
@@ -794,8 +796,8 @@ class window(QtWidgets.QWidget):
             
          
             
-            ReportCard = ReportCardInit(self,self._Patient)
-            ReportCard.exec_()
+            ReportC = ReportCardInit(self._Patient)
+            ReportC.exec_()
             
 
     
