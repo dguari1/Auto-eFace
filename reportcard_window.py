@@ -84,7 +84,7 @@ class ReportCardInit(QDialog):
         self._MRN.setFont(newfont)
         
         
-        Disease_label = QLabel('Medical Condition:')
+        Disease_label = QLabel('Aditional Comments:')
         Disease_label.setFont(newfont)
         self._diease = QLineEdit(self)
         self._diease.setFont(newfont)

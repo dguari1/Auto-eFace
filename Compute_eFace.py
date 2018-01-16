@@ -196,41 +196,50 @@ class ReportCard(QDialog):
                               QtCore.Qt.WindowMinMaxButtonsHint)
         
         
+        
         self.main_Widget = QtWidgets.QWidget(self)
         
-        spacerh = QtWidgets.QWidget(self)
-        spacerh.setFixedSize(20,0)
+        self.spacerh = QtWidgets.QWidget(self)
+        self.spacerh.setFixedSize(10,0)
         
-        spacerv = QtWidgets.QWidget(self)
-        spacerv.setFixedSize(0,20)
+        self.spacerv = QtWidgets.QWidget(self)
+        self.spacerv.setFixedSize(0,10)
         
        
         
         newfont = QtGui.QFont("Times", 12)
+                
+
         
         RestingBrow_label = QLabel('Resting Brow:')
         RestingBrow_label.setFont(newfont)
         self._RestingBrow_measure =QLineEdit(self)
         self._RestingBrow_measure.setFont(newfont)
+        self._RestingBrow_measure.setFixedWidth(100)
         self._RestingBrow_eFACE =QLineEdit(self)
-        self._RestingBrow_eFACE.setFont(newfont)        
+        self._RestingBrow_eFACE.setFont(newfont)   
+        self._RestingBrow_eFACE.setFixedWidth(100)
 
 
         RestingPalpebralFissure_label = QLabel('Resting Palpebral Fissure:')
         RestingPalpebralFissure_label.setFont(newfont)
         self._RestingPalpebralFissure_measure =QLineEdit(self)
         self._RestingPalpebralFissure_measure.setFont(newfont)
+        self._RestingPalpebralFissure_measure.setFixedWidth(100)
         self._RestingPalpebralFissure_eFACE =QLineEdit(self)
         self._RestingPalpebralFissure_eFACE.setFont(newfont)
+        self._RestingPalpebralFissure_eFACE.setFixedWidth(100)
         
         
-        OralCommissureatRest_label = QLabel('Oral Commissure at Rest:\t\t')
+        OralCommissureatRest_label = QLabel('Oral Commissure at Rest:')
         OralCommissureatRest_label.setFont(newfont)
         OralCommissureatRest_label.setFixedWidth(300)
         self._OralCommissureatRest_measure =QLineEdit(self)
         self._OralCommissureatRest_measure.setFont(newfont)
+        self._OralCommissureatRest_measure.setFixedWidth(100)
         self._OralCommissureatRest_eFACE =QLineEdit(self)
         self._OralCommissureatRest_eFACE.setFont(newfont)
+        self._OralCommissureatRest_eFACE.setFixedWidth(100)
         
         
         
@@ -241,18 +250,24 @@ class ReportCard(QDialog):
         
         StaticBoxLayout.addWidget(RestingBrow_label,0,0,1,1)
         StaticBoxLayout.addWidget(self._RestingBrow_measure,0,1,1,1)
-        StaticBoxLayout.addWidget(spacerv,0,2,1,1)
-        StaticBoxLayout.addWidget(self._RestingBrow_eFACE,0,3,1,1)
+        percent_Label=QLabel('%'); percent_Label.setFont(newfont)
+        StaticBoxLayout.addWidget(percent_Label,0,2,1,1)
+        StaticBoxLayout.addWidget(self.spacerv,0,3,1,1)
+        StaticBoxLayout.addWidget(self._RestingBrow_eFACE,0,4,1,1)
         
         StaticBoxLayout.addWidget(RestingPalpebralFissure_label,1,0,1,1)
         StaticBoxLayout.addWidget(self._RestingPalpebralFissure_measure,1,1,1,1)
-        StaticBoxLayout.addWidget(spacerv,1,2,1,1)
-        StaticBoxLayout.addWidget(self._RestingPalpebralFissure_eFACE,1,3,1,1)
+        mm_Label=QLabel('mm'); mm_Label.setFont(newfont)
+        StaticBoxLayout.addWidget(mm_Label,1,2,1,1)
+        StaticBoxLayout.addWidget(self.spacerv,1,3,1,1)
+        StaticBoxLayout.addWidget(self._RestingPalpebralFissure_eFACE,1,4,1,1)
         
         StaticBoxLayout.addWidget(OralCommissureatRest_label,2,0,1,1)
         StaticBoxLayout.addWidget(self._OralCommissureatRest_measure,2,1,1,1)
-        StaticBoxLayout.addWidget(spacerv,2,2,1,1)
-        StaticBoxLayout.addWidget(self._OralCommissureatRest_eFACE,2,3,1,1)
+        percent_Label=QLabel('%'); percent_Label.setFont(newfont)
+        StaticBoxLayout.addWidget(percent_Label,2,2,1,1)
+        StaticBoxLayout.addWidget(self.spacerv,2,3,1,1)
+        StaticBoxLayout.addWidget(self._OralCommissureatRest_eFACE,2,4,1,1)
 
         StaticBox.setLayout(StaticBoxLayout)
         
@@ -263,24 +278,30 @@ class ReportCard(QDialog):
         BrowElevation_label.setFont(newfont)
         self._BrowElevation_measure =QLineEdit(self)
         self._BrowElevation_measure.setFont(newfont)
+        self._BrowElevation_measure.setFixedWidth(100)
         self._BrowElevation_eFACE =QLineEdit(self)
         self._BrowElevation_eFACE.setFont(newfont)
+        self._BrowElevation_eFACE.setFixedWidth(100)
         
         
         GentleEyeClosure_label = QLabel('Gentle Eye Closure:')
         GentleEyeClosure_label.setFont(newfont)
         self._GentleEyeClosure_measure =QLineEdit(self)
         self._GentleEyeClosure_measure.setFont(newfont)
+        self._GentleEyeClosure_measure.setFixedWidth(100)
         self._GentleEyeClosure_eFACE =QLineEdit(self)
         self._GentleEyeClosure_eFACE.setFont(newfont)
+        self._GentleEyeClosure_eFACE.setFixedWidth(100)
         
         
         FullEyeClosure_label = QLabel('Full Eye Closure:')
         FullEyeClosure_label.setFont(newfont)
         self._FullEyeClosure_measure =QLineEdit(self)
         self._FullEyeClosure_measure.setFont(newfont)
+        self._FullEyeClosure_measure.setFixedWidth(100)
         self._FullEyeClosure_eFACE =QLineEdit(self)
         self._FullEyeClosure_eFACE.setFont(newfont)    
+        self._FullEyeClosure_eFACE.setFixedWidth(100)
         
         
         OralCommissureMovementwithSmile_label = QLabel('Oral Commissure Movement with Smile:')
@@ -288,16 +309,20 @@ class ReportCard(QDialog):
         OralCommissureMovementwithSmile_label.setFixedWidth(300)
         self._OralCommissureMovementwithSmile_measure =QLineEdit(self)
         self._OralCommissureMovementwithSmile_measure.setFont(newfont)
+        self._OralCommissureMovementwithSmile_measure.setFixedWidth(100)
         self._OralCommissureMovementwithSmile_eFACE =QLineEdit(self)
         self._OralCommissureMovementwithSmile_eFACE.setFont(newfont) 
+        self._OralCommissureMovementwithSmile_eFACE.setFixedWidth(100)
         
         
         LowerLipMovement_label = QLabel('Lower Lip Movement:')
         LowerLipMovement_label.setFont(newfont)
         self._LowerLipMovement_measure =QLineEdit(self)
         self._LowerLipMovement_measure.setFont(newfont)
+        self._LowerLipMovement_measure.setFixedWidth(100)
         self._LowerLipMovement_eFACE =QLineEdit(self)
-        self._LowerLipMovement_eFACE.setFont(newfont)      
+        self._LowerLipMovement_eFACE.setFont(newfont) 
+        self._LowerLipMovement_eFACE.setFixedWidth(100)
         
         
         DynamicBox = QtWidgets.QGroupBox('Dynamic Measures')
@@ -306,39 +331,52 @@ class ReportCard(QDialog):
         
         DynamicBoxLayout.addWidget(BrowElevation_label,0,0,1,1)
         DynamicBoxLayout.addWidget(self._BrowElevation_measure,0,1,1,1)
-        DynamicBoxLayout.addWidget(spacerv,0,2,1,1)
-        DynamicBoxLayout.addWidget(self._BrowElevation_eFACE,0,3,1,1)
+        percent_Label=QLabel('%'); percent_Label.setFont(newfont)
+        DynamicBoxLayout.addWidget(percent_Label,0,2,1,1)
+        DynamicBoxLayout.addWidget(self.spacerv,0,3,1,1)
+        DynamicBoxLayout.addWidget(self._BrowElevation_eFACE,0,4,1,1)
         
         DynamicBoxLayout.addWidget(GentleEyeClosure_label,1,0,1,1)
         DynamicBoxLayout.addWidget(self._GentleEyeClosure_measure,1,1,1,1)
-        DynamicBoxLayout.addWidget(spacerv,1,2,1,1)
-        DynamicBoxLayout.addWidget(self._GentleEyeClosure_eFACE,1,3,1,1)
+        percent_Label=QLabel('%'); percent_Label.setFont(newfont)
+        DynamicBoxLayout.addWidget(percent_Label,1,2,1,1)
+        DynamicBoxLayout.addWidget(self.spacerv,1,3,1,1)
+        DynamicBoxLayout.addWidget(self._GentleEyeClosure_eFACE,1,4,1,1)
         
         DynamicBoxLayout.addWidget(FullEyeClosure_label,2,0,1,1)
         DynamicBoxLayout.addWidget(self._FullEyeClosure_measure,2,1,1,1)
-        DynamicBoxLayout.addWidget(spacerv,2,2,1,1)
-        DynamicBoxLayout.addWidget(self._FullEyeClosure_eFACE,2,3,1,1)     
+        percent_Label=QLabel('%'); percent_Label.setFont(newfont)
+        DynamicBoxLayout.addWidget(percent_Label,2,2,1,1)
+        DynamicBoxLayout.addWidget(self.spacerv,2,3,1,1)
+        DynamicBoxLayout.addWidget(self._FullEyeClosure_eFACE,2,4,1,1)     
         
         DynamicBoxLayout.addWidget(OralCommissureMovementwithSmile_label,3,0,1,1)
         DynamicBoxLayout.addWidget(self._OralCommissureMovementwithSmile_measure,3,1,1,1)
-        DynamicBoxLayout.addWidget(spacerv,3,2,1,1)
-        DynamicBoxLayout.addWidget(self._OralCommissureMovementwithSmile_eFACE,3,3,1,1)         
+        percent_Label=QLabel('%'); percent_Label.setFont(newfont)
+        DynamicBoxLayout.addWidget(percent_Label,3,2,1,1)
+        DynamicBoxLayout.addWidget(self.spacerv,3,3,1,1)
+        DynamicBoxLayout.addWidget(self._OralCommissureMovementwithSmile_eFACE,3,4,1,1)         
         
         DynamicBoxLayout.addWidget(LowerLipMovement_label,4,0,1,1)
         DynamicBoxLayout.addWidget(self._LowerLipMovement_measure,4,1,1,1)
-        DynamicBoxLayout.addWidget(spacerv,4,2,1,1)
-        DynamicBoxLayout.addWidget(self._LowerLipMovement_eFACE,4,3,1,1)   
+        mm_Label=QLabel('mm'); mm_Label.setFont(newfont)
+        DynamicBoxLayout.addWidget(mm_Label,4,2,1,1)
+        DynamicBoxLayout.addWidget(self.spacerv,4,3,1,1)
+        DynamicBoxLayout.addWidget(self._LowerLipMovement_eFACE,4,4,1,1)   
         
         DynamicBox.setLayout(DynamicBoxLayout)
         
         
-        OcularSynkenisis_label = QLabel('Ocular Synkenisis:                  ')
+        OcularSynkenisis_label = QLabel('Ocular Synkenisis:')
         OcularSynkenisis_label.setFont(newfont)
         OcularSynkenisis_label.setFixedWidth(300)
         self._OcularSynkenisis_measure =QLineEdit(self)
         self._OcularSynkenisis_measure.setFont(newfont)
+        self._OcularSynkenisis_measure.setFixedWidth(100)
         self._OcularSynkenisis_eFACE =QLineEdit(self)
         self._OcularSynkenisis_eFACE.setFont(newfont) 
+        self._OcularSynkenisis_eFACE.setFixedWidth(100)
+        
         
         SynkenisisBox = QtWidgets.QGroupBox('Synkenisis Measures')
         SynkenisisBox.setStyleSheet(self.getStyleSheet(scriptDir + os.path.sep + 'include' + os.path.sep + 'GroupBoxStyle.qss'))
@@ -346,8 +384,10 @@ class ReportCard(QDialog):
         
         SynkenisisBoxLayout.addWidget(OcularSynkenisis_label,0,0,1,1)
         SynkenisisBoxLayout.addWidget(self._OcularSynkenisis_measure,0,1,1,1)
-        SynkenisisBoxLayout.addWidget(spacerv,0,2,1,1)
-        SynkenisisBoxLayout.addWidget(self._OcularSynkenisis_eFACE,0,3,1,1)
+        mm_Label=QLabel('mm'); mm_Label.setFont(newfont)
+        SynkenisisBoxLayout.addWidget(mm_Label,0,2,1,1)
+        SynkenisisBoxLayout.addWidget(self.spacerv,0,3,1,1)
+        SynkenisisBoxLayout.addWidget(self._OcularSynkenisis_eFACE,0,4,1,1)
         
         SynkenisisBox.setLayout(SynkenisisBoxLayout)
         
@@ -371,27 +411,43 @@ class ReportCard(QDialog):
         #Top Labels
         Measure_Label = QLabel('Measures')
         Measure_Label.setFont(newfont)
+        Measure_Label.setFixedWidth(100)
+        #Measure_Label.setAlignment(QtCore.Qt.AlignCenter)
+        
+        
         
         eFACE_Label = QLabel('eFACE')
         eFACE_Label.setFont(newfont)
+        eFACE_Label.setFixedWidth(100)
+        #eFACE_Label.setAlignment(QtCore.Qt.AlignCenter)
         
-        TopLabelsLayout = QtWidgets.QHBoxLayout()
-        TopLabelsLayout.addWidget(QLabel(''))
-        TopLabelsLayout.addWidget(QLabel(''))
-        TopLabelsLayout.addWidget(Measure_Label)
-        TopLabelsLayout.addWidget(eFACE_Label)
+        empty_Label = QLabel('')
+        empty_Label.setFixedWidth(325)
         
-
+#        TopLabelsLayout = QtWidgets.QHBoxLayout()
+#        TopLabelsLayout.addWidget(empty_Label)
+#        TopLabelsLayout.addWidget(Measure_Label)
+#        TopLabelsLayout.addWidget(QLabel(''))
+#        TopLabelsLayout.addWidget(eFACE_Label)
+#        
+        TopLabelsLayout = QGridLayout()
+        TopLabelsLayout.addWidget(empty_Label,0,0)
+        TopLabelsLayout.addWidget(Measure_Label,0,1)
+        TopLabelsLayout.addWidget(QLabel(''),0,2)
+        TopLabelsLayout.addWidget(self.spacerv,0,3)
+        TopLabelsLayout.addWidget(eFACE_Label,0,4)
+        
+        
         
         layout = QtWidgets.QVBoxLayout()
         layout.addLayout(TopLabelsLayout)
-        layout.addWidget(spacerv)
+        layout.addWidget(self.spacerv)
         layout.addWidget(StaticBox)
-        layout.addWidget(spacerv)
+        layout.addWidget(self.spacerv)
         layout.addWidget(DynamicBox)
-        layout.addWidget(spacerv)
+        layout.addWidget(self.spacerv)
         layout.addWidget(SynkenisisBox)
-        layout.addWidget(spacerv)
+        layout.addWidget(self.spacerv)
         layout.addLayout(ButtonLayout)
                 
         self.setLayout(layout)
@@ -400,15 +456,18 @@ class ReportCard(QDialog):
         #compute measures and update window
         BrowatRest, DeltaPalpebralFissureRest, OralCommissureatRest, BrowatRaising, GentleEyeClossure, EyeClosureTight, OralCommissureatSmile, LowerLipMovementEEEE,OcularSynkinesis = Compute_eFace(self._Patient)
         
-        self._RestingBrow_measure.setText(str(np.round(BrowatRest,2)*100) + ' %')
-        self._RestingPalpebralFissure_measure.setText(str(np.round(DeltaPalpebralFissureRest,2)) + ' mm')
-        self._OralCommissureatRest_measure.setText(str(np.round(OralCommissureatRest,2)*100) + ' %')
-        self._BrowElevation_measure.setText(str(np.round(BrowatRaising,2)*100) + ' %')
-        self._GentleEyeClosure_measure.setText(str(np.round(GentleEyeClossure,2)*100) + ' %')
-        self._FullEyeClosure_measure.setText(str(np.round(EyeClosureTight,2)*100) + ' %')
-        self._OralCommissureMovementwithSmile_measure.setText(str(np.round(OralCommissureatSmile,2)*100) + ' %') 
-        self._LowerLipMovement_measure.setText(str(np.round(LowerLipMovementEEEE,2)) + ' mm')
-        self._OcularSynkenisis_measure.setText(str(np.round(OcularSynkinesis,2)) + ' mm')
+        self._RestingBrow_measure.setText(str(np.round(BrowatRest,3)*100))
+        self._RestingPalpebralFissure_measure.setText(str(np.round(DeltaPalpebralFissureRest,2)))
+        self._OralCommissureatRest_measure.setText(str(np.round(OralCommissureatRest,3)*100))
+        self._BrowElevation_measure.setText(str(np.round(BrowatRaising,3)*100))
+        self._GentleEyeClosure_measure.setText(str(np.round(GentleEyeClossure,3)*100))
+        self._FullEyeClosure_measure.setText(str(np.round(EyeClosureTight,3)*100))
+        self._OralCommissureMovementwithSmile_measure.setText(str(np.round(OralCommissureatSmile,3)*100)) 
+        self._LowerLipMovement_measure.setText(str(np.round(LowerLipMovementEEEE,2)))
+        self._OcularSynkenisis_measure.setText(str(np.round(OcularSynkinesis,2)))
+        
+        
+        self.setFixedSize(self.size())
 
     def Cancel(self):
         #user doesn't want to continue, close this window
@@ -417,7 +476,59 @@ class ReportCard(QDialog):
         
     def Done(self):
         #all is done, close this window and return to the main window 
+        
+        #lets save things in a .eFace file for the moment
+        
+        folder_name,extension = os.path.split(self._Patient._Rest._file_name)
 
+        
+        file_name = os.path.join(folder_name,self._Patient._Patient_ID+'.eFACE')
+        
+        #remove any existing files
+        if os.path.isfile(file_name):
+            os.remove(file_name)       
+            
+        with open(file_name,'a') as f:
+            
+            f.write('# Patient ID { \n')
+            f.write(self._Patient._Patient_ID)
+            f.write('\n# } \n')
+                    
+            f.write('# Medical Record Number { \n')
+            f.write(self._Patient._MRN)
+            f.write('\n# } \n')
+                    
+            f.write('# Aditional Comments { \n')
+            f.write(self._Patient._MRN)
+            f.write('\n# } \n')      
+                    
+
+            f.write('# Results (Meausure, eFACE Score) { \n')
+            f.write('---Static Measures \n')
+            f.write("Brow at Rest:    %s %%,    %s \n" % (self._RestingBrow_measure.text(), self._RestingBrow_eFACE.text()))
+            f.write("Palpebral Fissure at Rest:    %s %%,    %s \n" % (self._RestingPalpebralFissure_measure.text(), self._RestingPalpebralFissure_eFACE.text()))
+            f.write("Oral Commisure at Rest:    %s mm,    %s \n" % (self._OralCommissureatRest_measure.text(), self._OralCommissureatRest_eFACE.text()))
+            f.write('---Dynamic Measures \n')
+            f.write("Brow Elevation:    %s %%,    %s \n" % (self._BrowElevation_measure.text(), self._BrowElevation_eFACE.text()))
+            f.write("Gentle Eye Closure:    %s %%,    %s \n" % (self._GentleEyeClosure_measure.text(), self._GentleEyeClosure_eFACE.text()))
+            f.write("Full Eye Closure:    %s %%,    %s \n" % (self._FullEyeClosure_measure.text(), self._FullEyeClosure_eFACE.text()))
+            f.write("Oral Commissure Movement with Smile:    %s %%,    %s \n" % (self._OralCommissureMovementwithSmile_measure.text(), self._OralCommissureMovementwithSmile_eFACE.text()))
+            f.write("Lower Lip Movement:    %s mm,    %s \n" % (self._LowerLipMovement_measure.text(), self._LowerLipMovement_eFACE.text()))
+            f.write('---Synkenisis Measures \n')
+            f.write("Ocular Synkenisis:    %s mm,    %s" % (self._OcularSynkenisis_measure.text(), self._OcularSynkenisis_eFACE.text()))
+            f.write('\n# } \n') 
+
+            f.write('# Calibration Type { \n')
+            f.write(self._Patient._CalibrationType)
+            f.write('\n# } \n')        
+                    
+            f.write('# Calibration Value { \n')
+            f.write(str(self._Patient._CalibrationValue))
+            f.write('\n# } \n') 
+                    
+            f.write('# Model Name { \n')
+            f.write(self._Patient._ModelName)
+            f.write('\n# } \n')                     
         
         self.close()
 

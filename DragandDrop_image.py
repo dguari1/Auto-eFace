@@ -23,7 +23,7 @@ from settings_window import ShowSettings
 #from ProcessLandmarks import GetLandmarks
 from ThumbNailViewer import ThumbNailViewer
 from reportcard_window import ReportCardInit
-from Compute_eFace import ReportCard
+
 
 class PatientPhotograph(object):
     
@@ -71,7 +71,7 @@ class Patient(object):
         
         self._CalibrationType='Iris'
         self._CalibrationValue=11.77
-            
+        self._ModelName = 'iBUG' 
     
 
 class window(QtWidgets.QWidget):
@@ -793,6 +793,7 @@ class window(QtWidgets.QWidget):
             
             self._Patient._CalibrationType = self._CalibrationType
             self._Patient._CalibrationValue = self._CalibrationValue
+            self._Patient._ModelName = self._ModelName
             
          
             
