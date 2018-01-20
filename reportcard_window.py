@@ -168,10 +168,10 @@ class ReportCardInit(QDialog):
                         "Cannot proceed without selecting the healthy side of the face",
                             QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.NoButton)
         else:
-
+            self.close()
             Report = ReportCard(self._Patient)
             Report.exec_()
-            self.close()
+            
 
        
     def closeEvent(self, event):

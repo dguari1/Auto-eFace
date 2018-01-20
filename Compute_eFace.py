@@ -80,24 +80,24 @@ def Compute_eFace(Patient):
         
         DeltaBrow = RightEyeBrow.BrowHeight - RightRest.BrowHeight
         
-        BrowatRaising =  (RightEyeBrow.BrowHeight - LeftEyeBrow.BrowHeight)/DeltaBrow
+        BrowatRaising =  (LeftRest.BrowHeight - LeftEyeBrow.BrowHeight)/DeltaBrow
         
     elif Patient._HealthySide == 'Left':
         
         DeltaBrow = LeftEyeBrow.BrowHeight - LeftRest.BrowHeight
         
-        BrowatRaising =  (LeftEyeBrow.BrowHeight - RightEyeBrow.BrowHeight)/DeltaBrow
+        BrowatRaising =  (RightRest.BrowHeight - RightEyeBrow.BrowHeight)/DeltaBrow
     
 
     #Palpebral Fisure at Rest
     PalpebralFissureRest = palpebral_fissure(Patient._Rest, Patient._CalibrationType, Patient._CalibrationValue) #[Rigth, Left]
     if Patient._HealthySide == 'Right':
         
-        DeltaPalpebralFissureRest = PalpebralFissureRest[0] - PalpebralFissureRest[1]
+        DeltaPalpebralFissureRest = PalpebralFissureRest[1]/PalpebralFissureRest[0]
         
     elif Patient._HealthySide == 'Left':
         
-        DeltaPalpebralFissureRest = PalpebralFissureRest[1] - PalpebralFissureRest[0]
+        DeltaPalpebralFissureRest = PalpebralFissureRest[0]/PalpebralFissureRest[1]  
     
 
     #Oral commisure at rest
@@ -132,44 +132,58 @@ def Compute_eFace(Patient):
     PalpebralFissureEyeClosureGently = palpebral_fissure(Patient._EyeClosureGently, Patient._CalibrationType, Patient._CalibrationValue) #[Rigth, Left]
     if Patient._HealthySide == 'Right':
         #Right eye is healthy, measure how much left eye is open with respect to paralized eye at rest 
-        GentleEyeClossure = PalpebralFissureEyeClosureGently[1]/PalpebralFissureRest[1]
+        GentleEyeClossure = 1 - PalpebralFissureEyeClosureGently[1]/PalpebralFissureRest[1]
         
     elif Patient._HealthySide == 'Left':
          #Left eye is healthy, measure how much right eye is open with respect to paralized eye at rest 
-        GentleEyeClossure = PalpebralFissureEyeClosureGently[0]/PalpebralFissureRest[0]
+        GentleEyeClossure = 1 - PalpebralFissureEyeClosureGently[0]/PalpebralFissureRest[0]
         
         
     #Palpebral Fisure at Tight eye closure 
     PalpebralFissureEyeClosureTight = palpebral_fissure(Patient._EyeClosureTight, Patient._CalibrationType, Patient._CalibrationValue) #[Rigth, Left]
     if Patient._HealthySide == 'Right':
         #Right eye is healthy, measure how much left eye is open with respect to paralized eye at rest 
-        EyeClosureTight = PalpebralFissureEyeClosureTight[1]/PalpebralFissureRest[1]
+        EyeClosureTight = 1 - PalpebralFissureEyeClosureTight[1]/PalpebralFissureRest[1]
         
     elif Patient._HealthySide == 'Left':
          #Left eye is healthy, measure how much right eye is open with respect to paralized eye at rest 
-        EyeClosureTight = PalpebralFissureEyeClosureTight[0]/PalpebralFissureRest[0]
+        EyeClosureTight = 1 - PalpebralFissureEyeClosureTight[0]/PalpebralFissureRest[0]
 
     #lower lip movement with EEEE
-    LowerLipMovementEEEE = DeviationPuckeringLips.CommisureHeightDeviation
-    
+    if Patient._HealthySide == 'Right':
+        
+        LowerLipMovementEEEE = LeftDentalShow.LoweLipActivation/RightDentalShow.LoweLipActivation
+
+        
+    elif Patient._HealthySide == 'Left':
+        
+        LowerLipMovementEEEE = RightDentalShow.LoweLipActivation/LeftDentalShow.LoweLipActivation
+
     #Ocular Synkinesis 
     PalpebralFissureLargeSmile = palpebral_fissure(Patient._LargeSmile, Patient._CalibrationType, Patient._CalibrationValue) #[Rigth, Left]
     PalpebralFissurePuckeringLips = palpebral_fissure(Patient._PuckeringLips, Patient._CalibrationType, Patient._CalibrationValue) #[Rigth, Left]
     if Patient._HealthySide == 'Right':
         
-        DeltaPalpebralFissureLargeSmile = PalpebralFissureLargeSmile[0] - PalpebralFissureLargeSmile[1]
-        DeltaPalpebralFissurePuckeringLips = PalpebralFissurePuckeringLips[0] - PalpebralFissurePuckeringLips[1]
+        DeltaPalpebralFissureLargeSmile = PalpebralFissureLargeSmile[1]/PalpebralFissureLargeSmile[0]
+        DeltaPalpebralFissurePuckeringLips = PalpebralFissurePuckeringLips[1]/PalpebralFissurePuckeringLips[0]
+                
+        OcularSynkinesis_Smile = (PalpebralFissureLargeSmile[1]/PalpebralFissureRest[1]) / (PalpebralFissureLargeSmile[0]/PalpebralFissureRest[0])
+        OcularSynkinesis_Pucker = (PalpebralFissurePuckeringLips[1]/PalpebralFissureRest[1]) / (PalpebralFissurePuckeringLips[0]/PalpebralFissureRest[0])
+
         
     elif Patient._HealthySide == 'Left':
         
-        DeltaPalpebralFissureLargeSmile = PalpebralFissureLargeSmile[1] - PalpebralFissureLargeSmile[0]
-        DeltaPalpebralFissurePuckeringLips = PalpebralFissurePuckeringLips[1] - PalpebralFissurePuckeringLips[0]
+        DeltaPalpebralFissureLargeSmile = PalpebralFissureLargeSmile[0]/PalpebralFissureLargeSmile[1]
+        DeltaPalpebralFissurePuckeringLips = PalpebralFissurePuckeringLips[0]/PalpebralFissurePuckeringLips[1]
+        
+        OcularSynkinesis_Smile = (PalpebralFissureLargeSmile[0]/PalpebralFissureRest[0]) / (PalpebralFissureLargeSmile[1]/PalpebralFissureRest[1])
+        OcularSynkinesis_Pucker = (PalpebralFissurePuckeringLips[0]/PalpebralFissureRest[0]) / (PalpebralFissurePuckeringLips[1]/PalpebralFissureRest[1])
     
 
-    if abs(DeltaPalpebralFissureLargeSmile) >= abs(DeltaPalpebralFissurePuckeringLips):
-        OcularSynkinesis = DeltaPalpebralFissureLargeSmile
+    if OcularSynkinesis_Smile <= OcularSynkinesis_Pucker:
+        OcularSynkinesis = OcularSynkinesis_Smile
     else:
-        OcularSynkinesis = DeltaPalpebralFissurePuckeringLips
+        OcularSynkinesis = OcularSynkinesis_Pucker
     
     
     return BrowatRest, DeltaPalpebralFissureRest, OralCommissureatRest, BrowatRaising, GentleEyeClossure, EyeClosureTight, OralCommissureatSmile, LowerLipMovementEEEE,OcularSynkinesis
@@ -257,8 +271,8 @@ class ReportCard(QDialog):
         
         StaticBoxLayout.addWidget(RestingPalpebralFissure_label,1,0,1,1)
         StaticBoxLayout.addWidget(self._RestingPalpebralFissure_measure,1,1,1,1)
-        mm_Label=QLabel('mm'); mm_Label.setFont(newfont)
-        StaticBoxLayout.addWidget(mm_Label,1,2,1,1)
+        percent_Label=QLabel('%'); percent_Label.setFont(newfont)
+        StaticBoxLayout.addWidget(percent_Label,1,2,1,1)
         StaticBoxLayout.addWidget(self.spacerv,1,3,1,1)
         StaticBoxLayout.addWidget(self._RestingPalpebralFissure_eFACE,1,4,1,1)
         
@@ -359,15 +373,15 @@ class ReportCard(QDialog):
         
         DynamicBoxLayout.addWidget(LowerLipMovement_label,4,0,1,1)
         DynamicBoxLayout.addWidget(self._LowerLipMovement_measure,4,1,1,1)
-        mm_Label=QLabel('mm'); mm_Label.setFont(newfont)
-        DynamicBoxLayout.addWidget(mm_Label,4,2,1,1)
+        percent_Label=QLabel('%'); percent_Label.setFont(newfont)
+        DynamicBoxLayout.addWidget(percent_Label,4,2,1,1)
         DynamicBoxLayout.addWidget(self.spacerv,4,3,1,1)
         DynamicBoxLayout.addWidget(self._LowerLipMovement_eFACE,4,4,1,1)   
         
         DynamicBox.setLayout(DynamicBoxLayout)
         
         
-        OcularSynkenisis_label = QLabel('Ocular Synkenisis:')
+        OcularSynkenisis_label = QLabel('Ocular Synkinesis:')
         OcularSynkenisis_label.setFont(newfont)
         OcularSynkenisis_label.setFixedWidth(300)
         self._OcularSynkenisis_measure =QLineEdit(self)
@@ -378,14 +392,14 @@ class ReportCard(QDialog):
         self._OcularSynkenisis_eFACE.setFixedWidth(100)
         
         
-        SynkenisisBox = QtWidgets.QGroupBox('Synkenisis Measures')
+        SynkenisisBox = QtWidgets.QGroupBox('Synkinesis Measures')
         SynkenisisBox.setStyleSheet(self.getStyleSheet(scriptDir + os.path.sep + 'include' + os.path.sep + 'GroupBoxStyle.qss'))
         SynkenisisBoxLayout = QtWidgets.QGridLayout()
         
         SynkenisisBoxLayout.addWidget(OcularSynkenisis_label,0,0,1,1)
         SynkenisisBoxLayout.addWidget(self._OcularSynkenisis_measure,0,1,1,1)
-        mm_Label=QLabel('mm'); mm_Label.setFont(newfont)
-        SynkenisisBoxLayout.addWidget(mm_Label,0,2,1,1)
+        percent_Label=QLabel('%'); percent_Label.setFont(newfont)
+        SynkenisisBoxLayout.addWidget(percent_Label,0,2,1,1)
         SynkenisisBoxLayout.addWidget(self.spacerv,0,3,1,1)
         SynkenisisBoxLayout.addWidget(self._OcularSynkenisis_eFACE,0,4,1,1)
         
@@ -457,14 +471,14 @@ class ReportCard(QDialog):
         BrowatRest, DeltaPalpebralFissureRest, OralCommissureatRest, BrowatRaising, GentleEyeClossure, EyeClosureTight, OralCommissureatSmile, LowerLipMovementEEEE,OcularSynkinesis = Compute_eFace(self._Patient)
         
         self._RestingBrow_measure.setText(str(np.round(BrowatRest,3)*100))
-        self._RestingPalpebralFissure_measure.setText(str(np.round(DeltaPalpebralFissureRest,2)))
+        self._RestingPalpebralFissure_measure.setText(str(np.round(DeltaPalpebralFissureRest,3)*100))
         self._OralCommissureatRest_measure.setText(str(np.round(OralCommissureatRest,3)*100))
         self._BrowElevation_measure.setText(str(np.round(BrowatRaising,3)*100))
         self._GentleEyeClosure_measure.setText(str(np.round(GentleEyeClossure,3)*100))
         self._FullEyeClosure_measure.setText(str(np.round(EyeClosureTight,3)*100))
         self._OralCommissureMovementwithSmile_measure.setText(str(np.round(OralCommissureatSmile,3)*100)) 
-        self._LowerLipMovement_measure.setText(str(np.round(LowerLipMovementEEEE,2)))
-        self._OcularSynkenisis_measure.setText(str(np.round(OcularSynkinesis,2)))
+        self._LowerLipMovement_measure.setText(str(np.round(LowerLipMovementEEEE,3)*100))
+        self._OcularSynkenisis_measure.setText(str(np.round(OcularSynkinesis,3)*100))
         
         
         self.setFixedSize(self.size())

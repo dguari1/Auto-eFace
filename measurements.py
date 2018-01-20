@@ -227,6 +227,7 @@ class FaceMeasurementsSide(object):
         self.MarginalReflexDistance2 = 0 
         self.BrowHeight = 0 
         self.DentalShow = 0 
+        self.LoweLipActivation = 0
         
 class FaceMeasurementsDeviation(object):
     
@@ -400,6 +401,18 @@ def get_measurements_from_data(shape, left_pupil, right_pupil, CalibrationType, 
     
     
     
+    #1/19/2017
+    #new measure that finds the position of the inner upper lip and the computes 
+    #the distance from that line to the inner lower lip both in left and right sides
+    
+    #upper lip - inside
+    x1_upperlip_inside=shape[60:65,0]
+    y1_upperlip_inside=shape[60:65,1]
+    
+    cross_upperlip_inside=rotate_axis(np.column_stack((x1_upperlip_inside,y1_upperlip_inside)),rot_angle,center)
+    ResultsRight.LoweLipActivation =  shape[67,1]-cross_upperlip_inside[1]
+    ResultsLeft.LoweLipActivation =  shape[65,1]-cross_upperlip_inside[1]
+    
     
     radius=(left_pupil[2]+right_pupil[2])/2
     if CalibrationType == 'Iris': #Iris radius will be used as calibration
@@ -414,6 +427,7 @@ def get_measurements_from_data(shape, left_pupil, right_pupil, CalibrationType, 
     ResultsLeft.MarginalReflexDistance1 = ResultsLeft.MarginalReflexDistance1*Calibration
     ResultsLeft.MarginalReflexDistance2 = ResultsLeft.MarginalReflexDistance2*Calibration
     ResultsLeft.BrowHeight = ResultsLeft.BrowHeight*Calibration
+    ResultsLeft.LoweLipActivation =  ResultsLeft.LoweLipActivation*Calibration
     
     
     ResultsRight.CommissureExcursion = ResultsRight.CommissureExcursion*Calibration
@@ -421,6 +435,7 @@ def get_measurements_from_data(shape, left_pupil, right_pupil, CalibrationType, 
     ResultsRight.MarginalReflexDistance1 = ResultsRight.MarginalReflexDistance1*Calibration
     ResultsRight.MarginalReflexDistance2 = ResultsRight.MarginalReflexDistance2*Calibration
     ResultsRight.BrowHeight = ResultsRight.BrowHeight*Calibration
+    ResultsRight.LoweLipActivation = ResultsRight.LoweLipActivation*Calibration
     
     ResultsDeviation.CommisureHeightDeviation = ResultsDeviation.CommisureHeightDeviation*Calibration
     ResultsDeviation.UpperLipHeightDeviation = ResultsDeviation.UpperLipHeightDeviation*Calibration
