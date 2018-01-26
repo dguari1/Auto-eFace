@@ -363,7 +363,7 @@ class Emotrics(QtWidgets.QDialog):
         if self.displayImage._opencvimage is not None:
             proposed_name = self._file_name[:-4]+'-landmarks'
             name,_ = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File',proposed_name, 'png (*.png);;jpg (*.jpg);; jpeg (*.jpeg)')
-            print('hola')
+
             if not name:
                 pass
             else:

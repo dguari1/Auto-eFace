@@ -257,7 +257,7 @@ class ReportCard(QDialog):
         
         
         
-        StaticBox = QtWidgets.QGroupBox('Static Measures')
+        StaticBox = QtWidgets.QGroupBox('Static Parameters')
         StaticBox.setStyleSheet(self.getStyleSheet(scriptDir + os.path.sep + 'include' + os.path.sep + 'GroupBoxStyle.qss'))
         StaticBoxLayout = QtWidgets.QGridLayout()
         
@@ -339,7 +339,7 @@ class ReportCard(QDialog):
         self._LowerLipMovement_eFACE.setFixedWidth(100)
         
         
-        DynamicBox = QtWidgets.QGroupBox('Dynamic Measures')
+        DynamicBox = QtWidgets.QGroupBox('Dynamic Parameters')
         DynamicBox.setStyleSheet(self.getStyleSheet(scriptDir + os.path.sep + 'include' + os.path.sep + 'GroupBoxStyle.qss'))
         DynamicBoxLayout = QtWidgets.QGridLayout()
         
@@ -392,7 +392,7 @@ class ReportCard(QDialog):
         self._OcularSynkenisis_eFACE.setFixedWidth(100)
         
         
-        SynkenisisBox = QtWidgets.QGroupBox('Synkinesis Measures')
+        SynkenisisBox = QtWidgets.QGroupBox('Synkinesis Parameters')
         SynkenisisBox.setStyleSheet(self.getStyleSheet(scriptDir + os.path.sep + 'include' + os.path.sep + 'GroupBoxStyle.qss'))
         SynkenisisBoxLayout = QtWidgets.QGridLayout()
         
