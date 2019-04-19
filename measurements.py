@@ -8,6 +8,8 @@ Created on Thu Aug 17 13:37:34 2017
 import numpy as np    
 from scipy.interpolate import UnivariateSpline
 
+#import matplotlib.pyplot as plt
+
 """
 here is where all the facial measures are compute. It is mostly rotation of points
 with respect to the line that connect the center of the iris, findinf splines 
@@ -63,6 +65,68 @@ def rotate_axis(points,rot_angle,displacement):
     return new_point
 
 
+def find_asym_lower_lips(points_lower, points_lower_inside, rot_angle,displacement):
+    x=points_lower[:,0]
+    y=points_lower[:,1]
+    rot_matrix=np.array([[np.cos(rot_angle), np.sin(rot_angle)],
+                      [-np.sin(rot_angle), np.cos(rot_angle)]])
+    rot_matrix_inv=np.array([[np.cos(rot_angle), -np.sin(rot_angle)],
+                      [np.sin(rot_angle), np.cos(rot_angle)]])
+ 
+    rot_x,rot_y=rot_matrix.dot([x-displacement[0],y-displacement[1]])
+    
+    spline = UnivariateSpline(rot_x,rot_y, s=1)
+    
+    new_rot_x = np.linspace(min(rot_x), max(rot_x), 100)
+    new_rot_y = spline(new_rot_x)
+    
+    #plt.plot(new_rot_x,new_rot_y)
+    max_pos = np.argmax(new_rot_y)
+    #plt.plot(new_rot_x[max_pos],new_rot_y[max_pos],'o')
+    #plt.plot(0,new_rot_y[max_pos],'o')
+    
+    mid_point_x_left = int(max(rot_x)/2)
+    mid_point_x_right = int(min(rot_x)/2)
+    #plt.plot(mid_point_x_left,spline(mid_point_x_left),'o')
+    #plt.plot(mid_point_x_right,spline(mid_point_x_right),'o')
+    
+    
+    x=points_lower_inside[:,0]
+    y=points_lower_inside[:,1]
+ 
+    rot_x_inside,rot_y_inside=rot_matrix.dot([x-displacement[0],y-displacement[1]])
+    
+    spline_inside = UnivariateSpline(rot_x_inside,rot_y_inside, s=1)
+    
+    new_rot_x_inside = np.linspace(min(rot_x_inside), max(rot_x_inside), 100)
+    new_rot_y_inside = spline_inside(new_rot_x_inside)
+    
+    #plt.plot(new_rot_x_inside,new_rot_y_inside)
+    #plt.plot(mid_point_x_left,spline_inside(mid_point_x_left),'o')
+    #plt.plot(mid_point_x_right,spline_inside(mid_point_x_right),'o')
+    
+    height_left = new_rot_y[max_pos] - spline_inside(mid_point_x_left)
+    height_right = new_rot_y[max_pos] - spline_inside(mid_point_x_right)
+    
+    return height_left,height_right 
+    
+    #print(height_left, height_right, abs(height_left-height_right))
+    
+    
+    
+#    new_x,new_y=rot_matrix_inv.dot([new_rot_x,new_rot_y])
+#    new_x=new_x+displacement[0]
+#    new_y=new_y+displacement[1]
+#    
+#    max_pos = np.argmax(new_y)
+#    print(max_pos)
+#    
+#    plt.plot(new_x,new_y)
+#    plt.plot(new_x[max_pos],new_y[max_pos],'o')
+
+    
+
+
 def find_point_in_lips(points_upper, points_lower, points_upper_inside, 
                 points_lower_inside, rot_angle, displacement, radius):
     
@@ -94,6 +158,7 @@ def find_point_in_lips(points_upper, points_lower, points_upper_inside,
     new_y_upper=new_y_upper+displacement[1]
         
     new_point_upper=np.array([new_x_upper,new_y_upper])
+
     
     #find the mouth openness
     x=points_lower[:,0]
@@ -113,8 +178,6 @@ def find_point_in_lips(points_upper, points_lower, points_upper_inside,
     new_y_lower=new_y_lower+new_y_upper
         
     new_point_lower=np.array([new_x_lower,new_y_lower])
-    
-    
     
     #find the teeth show 
     x=points_upper_inside[:,0]
@@ -155,7 +218,7 @@ def find_point_in_lips(points_upper, points_lower, points_upper_inside,
     
     
     #compute mouth openness and teeth show
-    openness = new_rot_y
+    openness = cross_lip_rot_y_lower - cross_lip_rot_y_upper#new_rot_y
     theet_show = cross_lip_rot_y_lower_inside-cross_lip_rot_y_upper_inside
     if theet_show < 0:
         theet_show = 0
@@ -228,6 +291,9 @@ class FaceMeasurementsSide(object):
         self.BrowHeight = 0 
         self.DentalShow = 0 
         self.LoweLipActivation = 0
+        self.LowerLipElevation = 0 
+        self.PalpebralFissureHeight = 0
+        self.MouthOpen = 0 
         
 class FaceMeasurementsDeviation(object):
     
@@ -242,8 +308,75 @@ class FaceMeasurementsDeviation(object):
         self.MarginalReflexDistance2 = 0 
         self.BrowHeight = 0 
         self.DentalShow = 0
+        self.MouthOpen = 0
+        self.PalpebralFissureHeight = 0
+        
+class FacialPointsOfInterest(object):
+    
+    def __init__(self):
+        self.cross_lower_lip = None
+        self.left_corner_mouth = None
+        self.right_corner_mouth = None
+        
+        self.mid_upper_lip_left = None
+        self.mid_lower_lip_left = None
+        self.mid_upper_insidelip_left = None
+        self.mid_lower_insidelip_left = None
+        
+        self.mid_upper_lip_right = None
+        self.mid_lower_lip_right = None
+        self.mid_upper_insidelip_right = None
+        self.mid_lower_insidelip_right = None
+        
+        self.mid_upper_lid_left = None
+        self.mid_lower_lid_left = None
+        self.mid_upper_lid_right = None
+        self.mid_lower_lid_right = None
+        
+        self.mid_brow_left = None
+        self.mid_brow_right = None
+
+#1/4/2019 compute palpebral fissure width     
+def palpebral_fissure_height(eye, rot_angle, center):
+    
+    rot_matrix=np.array([[np.cos(rot_angle), np.sin(rot_angle)],
+                  [-np.sin(rot_angle), np.cos(rot_angle)]])
+    rot_matrix_inv=np.array([[np.cos(rot_angle), -np.sin(rot_angle)],
+                  [np.sin(rot_angle), np.cos(rot_angle)]])
     
     
+    #upper lid
+    x=eye[0:4,0]
+    y=eye[0:4,1]
+    rot_x,rot_y=rot_matrix.dot([x-center[0],y-center[1]])
+    
+    spline_upper= UnivariateSpline(rot_x,rot_y)
+    mid_upper = (rot_x[1]+rot_x[2])/2
+    
+    #lower lid
+    x=eye[[0,5,4,3],0]
+    y=eye[[0,5,4,3],1]
+    rot_x,rot_y=rot_matrix.dot([x-center[0],y-center[1]])
+    
+    spline_lower = UnivariateSpline(rot_x,rot_y, s=1)
+    mid_lower = (rot_x[1]+rot_x[2])/2
+    
+    
+    mid_mid = (mid_upper+mid_lower)/2
+    new_up = spline_upper(mid_mid)
+    new_down = spline_lower(mid_mid)
+    
+    
+    uper_lid_x,uper_lid_y = rot_matrix_inv.dot([mid_mid,new_up])
+    uper_lid_x=uper_lid_x+center[0]
+    uper_lid_y=uper_lid_y+center[1]
+    
+    lower_lid_x,lower_lid_y = rot_matrix_inv.dot([mid_mid,new_down])
+    lower_lid_x=lower_lid_x+center[0]
+    lower_lid_y=lower_lid_y+center[1]
+    
+    
+    return np.sqrt((uper_lid_x-lower_lid_x)**2 + (uper_lid_y-lower_lid_y)**2)    
 
 def get_measurements_from_data(shape, left_pupil, right_pupil, CalibrationType, CalibrationValue):
     
@@ -251,6 +384,8 @@ def get_measurements_from_data(shape, left_pupil, right_pupil, CalibrationType, 
     ResultsRight = FaceMeasurementsSide()
     ResultsDeviation = FaceMeasurementsDeviation()
     ResultsPercentile = FaceMeasurementsDeviation()
+    
+    InterestPoints = FacialPointsOfInterest()
     
     slope, center = estimate_line(left_pupil, right_pupil)
     
@@ -266,6 +401,9 @@ def get_measurements_from_data(shape, left_pupil, right_pupil, CalibrationType, 
     #find where the lip curve crosses with the rotated 'x' axis, this provides the 
     #point where the lips cross with the middle of the face 
     cross_lowerlip=rotate_axis(np.column_stack((x1_lowerlip,y1_lowerlip)),rot_angle,center)
+    
+    
+    
     
     comm_exc_left, smile_angle_left, _ = mouth_measures(cross_lowerlip, shape[54], rot_angle)
     
@@ -297,6 +435,9 @@ def get_measurements_from_data(shape, left_pupil, right_pupil, CalibrationType, 
     temp=shape[64:68,1]
     y1_lowerlip_inside=np.append(y1_lowerlip_inside,temp[::-1])
     
+    
+    ResultsLeft.LowerLipElevation, ResultsRight.LowerLipElevation = find_asym_lower_lips(np.column_stack((x1_lowerlip,y1_lowerlip)),np.column_stack((x1_lowerlip_inside,y1_lowerlip_inside)),rot_angle,center)
+    
     #upper lip
     x1_upperlip=shape[48:55,0]
     y1_upperlip=shape[48:55,1]
@@ -326,6 +467,7 @@ def get_measurements_from_data(shape, left_pupil, right_pupil, CalibrationType, 
             distance_left)
     
     ResultsLeft.DentalShow = theet_show_left   
+    ResultsLeft.MouthOpen = openness_left
     #_ , _ , ResultsLeft.UpperVermillionHeight = mouth_measures(cross_lowerlip, new_point_upper_left, rot_angle)
     #_ , _ , ResultsLeft.LowerVermillionHeight = mouth_measures(cross_lowerlip, new_point_lower_left, rot_angle)
     
@@ -342,6 +484,7 @@ def get_measurements_from_data(shape, left_pupil, right_pupil, CalibrationType, 
             distance_right)
     
     ResultsRight.DentalShow = theet_show_right
+    ResultsRight.MouthOpen = openness_right
     #_ , _ , ResultsRight.UpperVermillionHeight = mouth_measures(cross_lowerlip, new_point_upper_right, rot_angle)
     #_ , _ , ResultsRight.LowerVermillionHeight = mouth_measures(cross_lowerlip, new_point_lower_right, rot_angle)
     
@@ -414,6 +557,10 @@ def get_measurements_from_data(shape, left_pupil, right_pupil, CalibrationType, 
     ResultsLeft.LoweLipActivation =  shape[65,1]-cross_upperlip_inside[1]
     
     
+    #Palpebral Fissure Height 
+    PalpebralFissureHeight_Right = palpebral_fissure_height(shape[36:42,:], rot_angle, center)
+    PalpebralFissureHeight_Left = palpebral_fissure_height(shape[42:48,:], rot_angle, center)
+    
     radius=(left_pupil[2]+right_pupil[2])/2
     if CalibrationType == 'Iris': #Iris radius will be used as calibration
         Calibration = CalibrationValue/(2*radius)
@@ -424,19 +571,25 @@ def get_measurements_from_data(shape, left_pupil, right_pupil, CalibrationType, 
     
     ResultsLeft.CommissureExcursion = ResultsLeft.CommissureExcursion*Calibration
     ResultsLeft.DentalShow = ResultsLeft.DentalShow*Calibration
+    ResultsLeft.MouthOpen = ResultsLeft.MouthOpen*Calibration
     ResultsLeft.MarginalReflexDistance1 = ResultsLeft.MarginalReflexDistance1*Calibration
     ResultsLeft.MarginalReflexDistance2 = ResultsLeft.MarginalReflexDistance2*Calibration
     ResultsLeft.BrowHeight = ResultsLeft.BrowHeight*Calibration
     ResultsLeft.LoweLipActivation =  ResultsLeft.LoweLipActivation*Calibration
-    
+    ResultsLeft.LowerLipElevation = ResultsLeft.LowerLipElevation*Calibration
+    ResultsLeft.PalpebralFissureHeight = PalpebralFissureHeight_Left*Calibration
+
     
     ResultsRight.CommissureExcursion = ResultsRight.CommissureExcursion*Calibration
     ResultsRight.DentalShow = ResultsRight.DentalShow*Calibration
+    ResultsRight.MouthOpen = ResultsRight.MouthOpen*Calibration
     ResultsRight.MarginalReflexDistance1 = ResultsRight.MarginalReflexDistance1*Calibration
     ResultsRight.MarginalReflexDistance2 = ResultsRight.MarginalReflexDistance2*Calibration
     ResultsRight.BrowHeight = ResultsRight.BrowHeight*Calibration
     ResultsRight.LoweLipActivation = ResultsRight.LoweLipActivation*Calibration
-    
+    ResultsRight.LowerLipElevation = ResultsRight.LowerLipElevation*Calibration
+    ResultsRight.PalpebralFissureHeight = PalpebralFissureHeight_Right*Calibration
+
     ResultsDeviation.CommisureHeightDeviation = ResultsDeviation.CommisureHeightDeviation*Calibration
     ResultsDeviation.UpperLipHeightDeviation = ResultsDeviation.UpperLipHeightDeviation*Calibration
     ResultsDeviation.LowerLipHeightDeviation = ResultsDeviation.LowerLipHeightDeviation*Calibration
@@ -445,9 +598,11 @@ def get_measurements_from_data(shape, left_pupil, right_pupil, CalibrationType, 
     ResultsDeviation.CommissureExcursion = abs(ResultsLeft.CommissureExcursion-ResultsRight.CommissureExcursion)
     ResultsDeviation.SmileAngle = abs(ResultsLeft.SmileAngle-ResultsRight.SmileAngle)
     ResultsDeviation.DentalShow = abs(ResultsLeft.DentalShow-ResultsRight.DentalShow)
+    ResultsDeviation.MouthOpen= abs(ResultsLeft.MouthOpen-ResultsRight.MouthOpen)
     ResultsDeviation.MarginalReflexDistance1 = abs(ResultsLeft.MarginalReflexDistance1-ResultsRight.MarginalReflexDistance1)
     ResultsDeviation.MarginalReflexDistance2 = abs(ResultsLeft.MarginalReflexDistance2-ResultsRight.MarginalReflexDistance2)
     ResultsDeviation.BrowHeight = abs(ResultsLeft.BrowHeight-ResultsRight.BrowHeight)
+    ResultsDeviation.PalpebralFissureHeight = abs(ResultsLeft.PalpebralFissureHeight - ResultsRight.PalpebralFissureHeight)
 
 
     if shape[57,0] >= cross_lowerlip[0] : #left is the good side
@@ -460,6 +615,11 @@ def get_measurements_from_data(shape, left_pupil, right_pupil, CalibrationType, 
             ResultsPercentile.DentalShow = (ResultsLeft.DentalShow - ResultsRight.DentalShow)*100/ResultsLeft.DentalShow   
         else:
             ResultsPercentile.DentalShow = 0
+            
+        if ResultsLeft.PalpebralFissureHeight > 0:
+            ResultsPercentile.PalpebralFissureHeight = abs(ResultsLeft.PalpebralFissureHeight - ResultsRight.PalpebralFissureHeight)*100/ResultsLeft.PalpebralFissureHeight
+        else:
+            ResultsPercentile.PalpebralFissureHeight = 0
     else:  #right is the good side 
         ResultsPercentile.BrowHeight = abs(ResultsLeft.BrowHeight - ResultsRight.BrowHeight)*100/ResultsRight.BrowHeight
         ResultsPercentile.MarginalReflexDistance1 = abs(ResultsLeft.MarginalReflexDistance1 - ResultsRight.MarginalReflexDistance1)*100/ResultsRight.MarginalReflexDistance1
@@ -471,11 +631,35 @@ def get_measurements_from_data(shape, left_pupil, right_pupil, CalibrationType, 
         else:
             ResultsPercentile.DentalShow =0     
     
-
+        if ResultsRight.PalpebralFissureHeight > 0:
+            ResultsPercentile.PalpebralFissureHeight = abs(ResultsLeft.PalpebralFissureHeight - ResultsRight.PalpebralFissureHeight)*100/ResultsRight.PalpebralFissureHeight
+        else:
+            ResultsPercentile.PalpebralFissureHeight = 0
     
     
     
-    return ResultsLeft, ResultsRight, ResultsDeviation, ResultsPercentile
+    InterestPoints.cross_lower_lip = cross_lowerlip
+    InterestPoints.left_corner_mouth = shape[54,:]
+    InterestPoints.right_corner_mouth = shape[48,:]
+    InterestPoints.mid_upper_lip_left = new_point_upper_left
+    InterestPoints.mid_lower_lip_left = new_point_lower_left
+    InterestPoints.mid_upper_insidelip_left = new_point_upper_inside_left
+    InterestPoints.mid_lower_insidelip_left = new_point_lower_inside_left
+    InterestPoints.mid_upper_lip_right = new_point_upper_right
+    InterestPoints.mid_lower_lip_right = new_point_lower_right
+    InterestPoints.mid_upper_insidelip_right = new_point_upper_inside_right
+    InterestPoints.mid_lower_insidelip_right = new_point_lower_inside_right
+    InterestPoints.mid_upper_lid_left = cross_upperlid_left
+    InterestPoints.mid_lower_lid_left = cross_lowerlid_left    
+    InterestPoints.mid_upper_lid_right = cross_upperlid_right
+    InterestPoints.mid_lower_lid_right = cross_lowerlid_right
+    InterestPoints.mid_brow_left =cross_brown_left
+    InterestPoints.mid_brow_right =cross_brow_right
+    
+    
+    
+    
+    return ResultsLeft, ResultsRight, ResultsDeviation, ResultsPercentile, InterestPoints
     
 
     

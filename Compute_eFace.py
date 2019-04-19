@@ -45,7 +45,7 @@ def Compute_eFace(Patient):
     
     #compute the different measures from each photo
     
-    LeftRest, RightRest, _, _ = get_measurements_from_data(Patient._Rest._shape, Patient._Rest._lefteye, Patient._Rest._righteye, Patient._CalibrationType, Patient._CalibrationValue)
+    LeftRest, RightRest, DeviationRest, _ = get_measurements_from_data(Patient._Rest._shape, Patient._Rest._lefteye, Patient._Rest._righteye, Patient._CalibrationType, Patient._CalibrationValue)
     
     LeftSmallSmile, RightSmallSmile, _, _ = get_measurements_from_data(Patient._SmallSmile._shape, Patient._SmallSmile._lefteye, Patient._SmallSmile._righteye, Patient._CalibrationType, Patient._CalibrationValue)
     
@@ -62,56 +62,81 @@ def Compute_eFace(Patient):
     LeftDentalShow, RightDentalShow, _, _ = get_measurements_from_data(Patient._DentalShow._shape, Patient._DentalShow._lefteye, Patient._DentalShow._righteye, Patient._CalibrationType, Patient._CalibrationValue)
 
 
+ 
+
     #Brow at Rest
     if Patient._HealthySide == 'Right':
         
         DeltaBrow = RightEyeBrow.BrowHeight - RightRest.BrowHeight
         
-        BrowatRest =  (RightRest.BrowHeight - LeftRest.BrowHeight)/DeltaBrow
+        BrowatRest =  (LeftRest.BrowHeight - RightRest.BrowHeight)/DeltaBrow
         
     elif Patient._HealthySide == 'Left':
         
         DeltaBrow = LeftEyeBrow.BrowHeight - LeftRest.BrowHeight
         
-        BrowatRest =  (LeftRest.BrowHeight - RightRest.BrowHeight)/DeltaBrow
+        BrowatRest =  (RightRest.BrowHeight - LeftRest.BrowHeight)/DeltaBrow
+
+    #BrowatRest = abs(RightRest.BrowHeight - LeftRest.BrowHeight)
       
     #Brow Elevantion with Brow Raising 
     if Patient._HealthySide == 'Right':
         
         DeltaBrow = RightEyeBrow.BrowHeight - RightRest.BrowHeight
         
-        BrowatRaising =  (LeftRest.BrowHeight - LeftEyeBrow.BrowHeight)/DeltaBrow
+        BrowatRaising =  (LeftEyeBrow.BrowHeight-LeftRest.BrowHeight)/DeltaBrow
+        
+        #BrowatRaising = LeftEyeBrow.BrowHeight - LeftRest.BrowHeight
         
     elif Patient._HealthySide == 'Left':
         
         DeltaBrow = LeftEyeBrow.BrowHeight - LeftRest.BrowHeight
         
-        BrowatRaising =  (RightRest.BrowHeight - RightEyeBrow.BrowHeight)/DeltaBrow
-    
+        BrowatRaising =  (RightEyeBrow.BrowHeight - RightRest.BrowHeight)/DeltaBrow
+        
+        #BrowatRaising = RightEyeBrow.BrowHeight - RightRest.BrowHeight
+        
+
 
     #Palpebral Fisure at Rest
     PalpebralFissureRest = palpebral_fissure(Patient._Rest, Patient._CalibrationType, Patient._CalibrationValue) #[Rigth, Left]
     if Patient._HealthySide == 'Right':
         
-        DeltaPalpebralFissureRest = PalpebralFissureRest[1]/PalpebralFissureRest[0]
+        DeltaPalpebralFissureRest = 1 - PalpebralFissureRest[1]/PalpebralFissureRest[0]
         
     elif Patient._HealthySide == 'Left':
         
-        DeltaPalpebralFissureRest = PalpebralFissureRest[0]/PalpebralFissureRest[1]  
-    
+        DeltaPalpebralFissureRest = 1 - PalpebralFissureRest[0]/PalpebralFissureRest[1] 
+      
 
     #Oral commisure at rest
     if Patient._HealthySide == 'Right':
+
+        #DeltaOralCommissure = RightLargeSmile.CommissureExcursion - RightRest.CommissureExcursion
         
-        DeltaOralCommissure = RightLargeSmile.CommissureExcursion - RightRest.CommissureExcursion
+        #OralCommissureatRest = (RightRest.CommissureExcursion - LeftRest.CommissureExcursion)/DeltaOralCommissure
         
-        OralCommissureatRest = (RightRest.CommissureExcursion - LeftRest.CommissureExcursion)/DeltaOralCommissure
+        Comm_position_right = Patient._Rest._shape[48,1]
+        Comm_position_left = Patient._Rest._shape[54,1]
+        
+        if Comm_position_left <= Comm_position_right :
+            OralCommissureatRest = DeviationRest.CommisureHeightDeviation
+        else:
+            OralCommissureatRest = -DeviationRest.CommisureHeightDeviation    
+        
         
     elif Patient._HealthySide == 'Left':
+        #DeltaOralCommissure = LeftLargeSmile.CommissureExcursion - LeftRest.CommissureExcursion
         
-        DeltaOralCommissure = LeftLargeSmile.CommissureExcursion - LeftRest.CommissureExcursion
-        
-        OralCommissureatRest = (LeftRest.CommissureExcursion - RightRest.CommissureExcursion)/DeltaOralCommissure
+        #OralCommissureatRest = (LeftRest.CommissureExcursion - RightRest.CommissureExcursion)/DeltaOralCommissure
+
+        Comm_position_right = Patient._Rest._shape[48,0]
+        Comm_position_left = Patient._Rest._shape[54,0]
+
+        if Comm_position_left <= Comm_position_right :
+            OralCommissureatRest = DeviationRest.CommisureHeightDeviation
+        else:
+            OralCommissureatRest = -DeviationRest.CommisureHeightDeviation
 
 
     #Oral commisure with Smile
@@ -121,43 +146,49 @@ def Compute_eFace(Patient):
         
         OralCommissureatSmile = (RightLargeSmile.CommissureExcursion - LeftLargeSmile.CommissureExcursion)/DeltaOralCommissure
         
+        OralCommissureatSmile = LeftLargeSmile.CommissureExcursion/RightLargeSmile.CommissureExcursion-1 
+        
     elif Patient._HealthySide == 'Left':
-        
+
         DeltaOralCommissure = LeftLargeSmile.CommissureExcursion - LeftRest.CommissureExcursion
-        
+
         OralCommissureatSmile = (LeftLargeSmile.CommissureExcursion - RightLargeSmile.CommissureExcursion)/DeltaOralCommissure
-        
-        
+
+        OralCommissureatSmile = RightLargeSmile.CommissureExcursion/LeftLargeSmile.CommissureExcursion - 1
+
+
     #Palpebral Fisure at Gentle eye closure 
     PalpebralFissureEyeClosureGently = palpebral_fissure(Patient._EyeClosureGently, Patient._CalibrationType, Patient._CalibrationValue) #[Rigth, Left]
     if Patient._HealthySide == 'Right':
         #Right eye is healthy, measure how much left eye is open with respect to paralized eye at rest 
-        GentleEyeClossure = 1 - PalpebralFissureEyeClosureGently[1]/PalpebralFissureRest[1]
+        GentleEyeClossure =  (PalpebralFissureEyeClosureGently[0]-PalpebralFissureEyeClosureGently[1])/PalpebralFissureRest[0]
         
     elif Patient._HealthySide == 'Left':
          #Left eye is healthy, measure how much right eye is open with respect to paralized eye at rest 
-        GentleEyeClossure = 1 - PalpebralFissureEyeClosureGently[0]/PalpebralFissureRest[0]
+        GentleEyeClossure = (PalpebralFissureEyeClosureGently[1]-PalpebralFissureEyeClosureGently[0])/PalpebralFissureRest[1]
         
-        
+
     #Palpebral Fisure at Tight eye closure 
     PalpebralFissureEyeClosureTight = palpebral_fissure(Patient._EyeClosureTight, Patient._CalibrationType, Patient._CalibrationValue) #[Rigth, Left]
     if Patient._HealthySide == 'Right':
         #Right eye is healthy, measure how much left eye is open with respect to paralized eye at rest 
-        EyeClosureTight = 1 - PalpebralFissureEyeClosureTight[1]/PalpebralFissureRest[1]
+        EyeClosureTight = (PalpebralFissureEyeClosureTight[0]-PalpebralFissureEyeClosureTight[1])/PalpebralFissureRest[0]
         
     elif Patient._HealthySide == 'Left':
          #Left eye is healthy, measure how much right eye is open with respect to paralized eye at rest 
-        EyeClosureTight = 1 - PalpebralFissureEyeClosureTight[0]/PalpebralFissureRest[0]
+        EyeClosureTight = (PalpebralFissureEyeClosureTight[1]-PalpebralFissureEyeClosureTight[0])/PalpebralFissureRest[1]
 
     #lower lip movement with EEEE
     if Patient._HealthySide == 'Right':
         
-        LowerLipMovementEEEE = LeftDentalShow.LoweLipActivation/RightDentalShow.LoweLipActivation
+        #LowerLipMovementEEEE = LeftDentalShow.LoweLipActivation/RightDentalShow.LoweLipActivation
+        LowerLipMovementEEEE =  RightDentalShow.LowerLipElevation -  LeftDentalShow.LowerLipElevation 
 
         
     elif Patient._HealthySide == 'Left':
         
-        LowerLipMovementEEEE = RightDentalShow.LoweLipActivation/LeftDentalShow.LoweLipActivation
+        #LowerLipMovementEEEE = RightDentalShow.LoweLipActivation/LeftDentalShow.LoweLipActivation
+        LowerLipMovementEEEE =  LeftDentalShow.LowerLipElevation - RightDentalShow.LowerLipElevation 
 
     #Ocular Synkinesis 
     PalpebralFissureLargeSmile = palpebral_fissure(Patient._LargeSmile, Patient._CalibrationType, Patient._CalibrationValue) #[Rigth, Left]
@@ -167,8 +198,10 @@ def Compute_eFace(Patient):
         DeltaPalpebralFissureLargeSmile = PalpebralFissureLargeSmile[1]/PalpebralFissureLargeSmile[0]
         DeltaPalpebralFissurePuckeringLips = PalpebralFissurePuckeringLips[1]/PalpebralFissurePuckeringLips[0]
                 
-        OcularSynkinesis_Smile = (PalpebralFissureLargeSmile[1]/PalpebralFissureRest[1]) / (PalpebralFissureLargeSmile[0]/PalpebralFissureRest[0])
-        OcularSynkinesis_Pucker = (PalpebralFissurePuckeringLips[1]/PalpebralFissureRest[1]) / (PalpebralFissurePuckeringLips[0]/PalpebralFissureRest[0])
+        OcularSynkinesis_Smile =   -(PalpebralFissureLargeSmile[0]-PalpebralFissureLargeSmile[1])/PalpebralFissureRest[0]        
+        #(PalpebralFissureLargeSmile[1]/PalpebralFissureRest[1]) / (PalpebralFissureLargeSmile[0]/PalpebralFissureRest[0])
+        OcularSynkinesis_Pucker =  -(PalpebralFissurePuckeringLips[0]-PalpebralFissurePuckeringLips[1])/PalpebralFissureRest[0]
+        #(PalpebralFissurePuckeringLips[1]/PalpebralFissureRest[1]) / (PalpebralFissurePuckeringLips[0]/PalpebralFissureRest[0])
 
         
     elif Patient._HealthySide == 'Left':
@@ -176,8 +209,10 @@ def Compute_eFace(Patient):
         DeltaPalpebralFissureLargeSmile = PalpebralFissureLargeSmile[0]/PalpebralFissureLargeSmile[1]
         DeltaPalpebralFissurePuckeringLips = PalpebralFissurePuckeringLips[0]/PalpebralFissurePuckeringLips[1]
         
-        OcularSynkinesis_Smile = (PalpebralFissureLargeSmile[0]/PalpebralFissureRest[0]) / (PalpebralFissureLargeSmile[1]/PalpebralFissureRest[1])
-        OcularSynkinesis_Pucker = (PalpebralFissurePuckeringLips[0]/PalpebralFissureRest[0]) / (PalpebralFissurePuckeringLips[1]/PalpebralFissureRest[1])
+        OcularSynkinesis_Smile =  -(PalpebralFissureLargeSmile[1]-PalpebralFissureLargeSmile[0])/PalpebralFissureRest[1]  
+        #(PalpebralFissureLargeSmile[0]/PalpebralFissureRest[0]) / (PalpebralFissureLargeSmile[1]/PalpebralFissureRest[1])
+        OcularSynkinesis_Pucker =  -(PalpebralFissurePuckeringLips[1]-PalpebralFissurePuckeringLips[0])/PalpebralFissureRest[1]
+        #(PalpebralFissurePuckeringLips[0]/PalpebralFissureRest[0]) / (PalpebralFissurePuckeringLips[1]/PalpebralFissureRest[1])
     
 
     if OcularSynkinesis_Smile <= OcularSynkinesis_Pucker:
@@ -373,7 +408,7 @@ class ReportCard(QDialog):
         
         DynamicBoxLayout.addWidget(LowerLipMovement_label,4,0,1,1)
         DynamicBoxLayout.addWidget(self._LowerLipMovement_measure,4,1,1,1)
-        percent_Label=QLabel('%'); percent_Label.setFont(newfont)
+        percent_Label=QLabel('mm'); percent_Label.setFont(newfont)
         DynamicBoxLayout.addWidget(percent_Label,4,2,1,1)
         DynamicBoxLayout.addWidget(self.spacerv,4,3,1,1)
         DynamicBoxLayout.addWidget(self._LowerLipMovement_eFACE,4,4,1,1)   
@@ -472,12 +507,12 @@ class ReportCard(QDialog):
         
         self._RestingBrow_measure.setText(str(np.round(BrowatRest,3)*100))
         self._RestingPalpebralFissure_measure.setText(str(np.round(DeltaPalpebralFissureRest,3)*100))
-        self._OralCommissureatRest_measure.setText(str(np.round(OralCommissureatRest,3)*100))
+        self._OralCommissureatRest_measure.setText(str(np.round(OralCommissureatRest,3)))
         self._BrowElevation_measure.setText(str(np.round(BrowatRaising,3)*100))
         self._GentleEyeClosure_measure.setText(str(np.round(GentleEyeClossure,3)*100))
         self._FullEyeClosure_measure.setText(str(np.round(EyeClosureTight,3)*100))
         self._OralCommissureMovementwithSmile_measure.setText(str(np.round(OralCommissureatSmile,3)*100)) 
-        self._LowerLipMovement_measure.setText(str(np.round(LowerLipMovementEEEE,3)*100))
+        self._LowerLipMovement_measure.setText(str(np.round(LowerLipMovementEEEE,3)))
         self._OcularSynkenisis_measure.setText(str(np.round(OcularSynkinesis,3)*100))
         
         
