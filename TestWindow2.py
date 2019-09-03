@@ -85,7 +85,7 @@ class DrawWindow(QDialog):
         textLayout.addWidget(self.spacerh)
         
         Box = QtWidgets.QGroupBox('Dynamic Parameters')
-        Box.setStyleSheet(self.getStyleSheet(os.getcwd() + os.path.sep + 'GroupBoxStyle.qss'))
+        Box.setStyleSheet(self.getStyleSheet(os.getcwd() + os.path.sep + 'include' + os.path.sep + 'GroupBoxStyle.qss'))
         BoxLayout = QtWidgets.QVBoxLayout()
         BoxLayout.addWidget(self.spacerv)
         BoxLayout.addLayout(textLayout)
@@ -93,6 +93,8 @@ class DrawWindow(QDialog):
         Box.setLayout(BoxLayout)
         
         self._scene.addWidget(Box)
+        
+        print(Box.size().width())
         
         #self._scene.addWidget(self.label1)
         #self._scene.addWidget(self.label2)
