@@ -8,6 +8,7 @@ Created on Sat Aug 19 12:54:17 2017
 import os
 import time
 
+
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5 import QtCore
@@ -169,6 +170,7 @@ class ReportCardInit(QDialog):
                             QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.NoButton)
         else:
             self.close()
+            
             Report = ReportCard(self._Patient)
             Report.exec_()
             

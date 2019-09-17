@@ -286,11 +286,47 @@ class window(QtWidgets.QWidget):
         exitAction.setIcon(QtGui.QIcon(scriptDir + os.path.sep + 'include' +os.path.sep +'icon_color'+ os.path.sep + 'exit_icon2.png'))
         exitAction.triggered.connect(self.close_app)
         
+        addImagesAction = QtWidgets.QPushButton(self)
+        addImagesAction.setIcon(QtGui.QIcon(scriptDir + os.path.sep + 'include' +os.path.sep +'icon_color'+ os.path.sep + 'snapshot_icon.png'))
+        addImagesAction.setIconSize(QtCore.QSize(40,40))
+        addImagesAction.setToolTip('Load images from file')
+        menu = QtWidgets.QMenu()
         
+        addRestImage = menu.addAction('Rest')
+        addRestImage.triggered.connect(lambda state, x = 'Rest': self.load_image(x))
+        
+        addBrowElevationImage = menu.addAction('Brow Elevation')
+        addBrowElevationImage.triggered.connect(lambda state, x = 'BrowElevation': self.load_image(x))
+        
+        addGentleEyeClosureImage  = menu.addAction('Gentle Eye Closure')
+        addGentleEyeClosureImage.triggered.connect(lambda state, x = 'GentleEyeClosureImage': self.load_image(x))
+        
+        addTightEyeClosureImage = menu.addAction('Tight Eye Closure')
+        addTightEyeClosureImage.triggered.connect(lambda state, x = 'TightEyeClosureImage': self.load_image(x))
+        
+        addBestSmileImage = menu.addAction('Best Smile')
+        addBestSmileImage.triggered.connect(lambda state, x = 'BestSmileImage': self.load_image(x))
+        
+        addBiggestSmiletImage = menu.addAction('Biggest Smile')
+        addBiggestSmiletImage.triggered.connect(lambda state, x = 'BiggestSmiletImage': self.load_image(x))
+        
+        addPuckerLipsImage = menu.addAction('Pucker Lips')
+        addPuckerLipsImage.triggered.connect(lambda state, x = 'PuckerLipsImage': self.load_image(x))
+        
+        addShowTeethImage = menu.addAction('Show Teeth')
+        addShowTeethImage.triggered.connect(lambda state, x = 'ShowTeethImage': self.load_image(x))
+        
+        
+        menu_font = menu.font()
+        menu_font.setPointSize(16)
+        menu.setFont(menu_font)
+        
+        addImagesAction.setMenu(menu)
         
         #create the toolbar and add the actions 
         self.toolBar = QtWidgets.QToolBar(self)
-        self.toolBar.addActions((loadAction, ReportAction,   saveAction, settingsAction,  exitAction))
+        self.toolBar.addWidget(addImagesAction)
+        self.toolBar.addActions((loadAction,ReportAction,   saveAction, settingsAction,  exitAction))
         
         #set the size of each icon to 50x50
         self.toolBar.setIconSize(QtCore.QSize(50,50))
@@ -320,6 +356,20 @@ class window(QtWidgets.QWidget):
         stylesheet = QTextStream(f).readAll()
         f.close()
         return stylesheet
+    
+    def load_image(self,image_type):
+
+        #load a file using the widget
+        name,_ = QtWidgets.QFileDialog.getOpenFileName(
+                self,'Load Image',
+                '',"Image files (*.png *.jpg *.jpeg *.tif *.tiff *.PNG *.JPG *.JPEG *.TIF *.TIFF)")
+        
+        if not name:
+            pass
+        else:
+            
+            print(image_type)
+        
     
     
     #this portion has to be updated once we define the tags for each photo
