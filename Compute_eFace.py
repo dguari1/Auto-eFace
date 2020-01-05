@@ -153,7 +153,6 @@ def Compute_eFace(Patient):
     h_left, h_right = LeftLargeSmile.CommissureExcursion, RightLargeSmile.CommissureExcursion
     #if with small smile, then comment above line an uncomment line below
     # h_left, h_right = LeftSmallSmile.CommissureExcursion, RightSmallSmile.CommissureExcursion
-    print(f_left, f_right,h_left, h_right)
     if Patient._HealthySide == 'Right':
         OralCommissureWithSmile =  (h_left - f_left)/(h_right - f_right)
     else:
@@ -441,6 +440,7 @@ class ReportCard(QDialog):
         self._RestingBrow_measure =QLineEdit(self)
         self._RestingBrow_measure.setFont(newfont)
         self._RestingBrow_measure.setFixedWidth(100)
+        self._RestingBrow_measure.textEdited.connect(self.UpdateScores)
         #self._RestingBrow_eFACE =QLineEdit(self)
         #self._RestingBrow_eFACE.setFont(newfont)   
         #self._RestingBrow_eFACE.setFixedWidth(100)
@@ -451,6 +451,7 @@ class ReportCard(QDialog):
         self._RestingPalpebralFissure_measure =QLineEdit(self)
         self._RestingPalpebralFissure_measure.setFont(newfont)
         self._RestingPalpebralFissure_measure.setFixedWidth(100)
+        self._RestingPalpebralFissure_measure.textEdited.connect(self.UpdateScores)
         #self._RestingPalpebralFissure_eFACE =QLineEdit(self)
         #self._RestingPalpebralFissure_eFACE.setFont(newfont)
         #self._RestingPalpebralFissure_eFACE.setFixedWidth(100)
@@ -462,6 +463,7 @@ class ReportCard(QDialog):
         self._OralCommissureatRest_measure =QLineEdit(self)
         self._OralCommissureatRest_measure.setFont(newfont)
         self._OralCommissureatRest_measure.setFixedWidth(100)
+        self._OralCommissureatRest_measure.textEdited.connect(self.UpdateScores)
         #self._OralCommissureatRest_eFACE =QLineEdit(self)
         #self._OralCommissureatRest_eFACE.setFont(newfont)
         #self._OralCommissureatRest_eFACE.setFixedWidth(100)
@@ -504,6 +506,7 @@ class ReportCard(QDialog):
         self._BrowElevation_measure =QLineEdit(self)
         self._BrowElevation_measure.setFont(newfont)
         self._BrowElevation_measure.setFixedWidth(100)
+        self._BrowElevation_measure.textEdited.connect(self.UpdateScores)
         #self._BrowElevation_eFACE =QLineEdit(self)
         #self._BrowElevation_eFACE.setFont(newfont)
         #self._BrowElevation_eFACE.setFixedWidth(100)
@@ -514,6 +517,7 @@ class ReportCard(QDialog):
         self._GentleEyeClosure_measure =QLineEdit(self)
         self._GentleEyeClosure_measure.setFont(newfont)
         self._GentleEyeClosure_measure.setFixedWidth(100)
+        self._GentleEyeClosure_measure.textEdited.connect(self.UpdateScores)
         #self._GentleEyeClosure_eFACE =QLineEdit(self)
         #self._GentleEyeClosure_eFACE.setFont(newfont)
         #self._GentleEyeClosure_eFACE.setFixedWidth(100)
@@ -524,6 +528,7 @@ class ReportCard(QDialog):
         self._FullEyeClosure_measure =QLineEdit(self)
         self._FullEyeClosure_measure.setFont(newfont)
         self._FullEyeClosure_measure.setFixedWidth(100)
+        self._FullEyeClosure_measure.textEdited.connect(self.UpdateScores)
         #self._FullEyeClosure_eFACE =QLineEdit(self)
         #self._FullEyeClosure_eFACE.setFont(newfont)    
         #self._FullEyeClosure_eFACE.setFixedWidth(100)
@@ -535,6 +540,7 @@ class ReportCard(QDialog):
         self._OralCommissureMovementwithSmile_measure =QLineEdit(self)
         self._OralCommissureMovementwithSmile_measure.setFont(newfont)
         self._OralCommissureMovementwithSmile_measure.setFixedWidth(100)
+        self._OralCommissureMovementwithSmile_measure.textEdited.connect(self.UpdateScores)
         #self._OralCommissureMovementwithSmile_eFACE =QLineEdit(self)
         #self._OralCommissureMovementwithSmile_eFACE.setFont(newfont) 
         #self._OralCommissureMovementwithSmile_eFACE.setFixedWidth(100)
@@ -545,6 +551,7 @@ class ReportCard(QDialog):
         self._LowerLipMovement_measure =QLineEdit(self)
         self._LowerLipMovement_measure.setFont(newfont)
         self._LowerLipMovement_measure.setFixedWidth(100)
+        self._LowerLipMovement_measure.textEdited.connect(self.UpdateScores)
         #self._LowerLipMovement_eFACE =QLineEdit(self)
         #self._LowerLipMovement_eFACE.setFont(newfont) 
         #self._LowerLipMovement_eFACE.setFixedWidth(100)
@@ -598,6 +605,7 @@ class ReportCard(QDialog):
         self._OcularSynkenisis_measure =QLineEdit(self)
         self._OcularSynkenisis_measure.setFont(newfont)
         self._OcularSynkenisis_measure.setFixedWidth(100)
+        self._OcularSynkenisis_measure.textEdited.connect(self.UpdateScores)
         #self._OcularSynkenisis_eFACE =QLineEdit(self)
         #self._OcularSynkenisis_eFACE.setFont(newfont) 
         #self._OcularSynkenisis_eFACE.setFixedWidth(100)
@@ -741,17 +749,82 @@ class ReportCard(QDialog):
         self._LowerLipMovement_measure.setText(str(np.round(LowerLipMovementEEEE,1)))
         self._OcularSynkenisis_measure.setText(str(np.round(OcularSynkinesis,1)))
         
+        
+        
+        Brow_at_rest = float(self._RestingBrow_measure.text())
+        PalpebralFissure_at_rest = float(self._RestingPalpebralFissure_measure.text())
+        OralCommissure_at_rest = float(self._OralCommissureatRest_measure.text())
+        
+   
+        EyeBrowElevation = float(self._BrowElevation_measure.text())
+        GentleEyeClosure = float(self._GentleEyeClosure_measure.text())
+        FullEyeClosure = float(self._FullEyeClosure_measure.text())
+        OralCommissureWithSmile = float(self._OralCommissureMovementwithSmile_measure.text())
+        LowerLipEEE = float(self._LowerLipMovement_measure.text())
+        OcularSynkinesis = float(self._OcularSynkenisis_measure.text())
+        
+        score_brow_rest = 100 - abs(100-Brow_at_rest)
+        score_PalpebralFissure_rest = 100 - abs(100-PalpebralFissure_at_rest)
+        score_OralCommissure_rest = 100 - abs(100-OralCommissure_at_rest)
+        score_EyeBrowElevation = 100-abs(100-EyeBrowElevation)
+        score_GentleEyeClosure = 100-abs(100-GentleEyeClosure)
+        score_FullEyeClosure = 100- abs(100-FullEyeClosure)
+        score_OralCommissureWithSmile = 100 - abs(100-OralCommissureWithSmile)
+        score_LowerLipEEE = 100 - abs(100-LowerLipEEE)
+        score_OcularSynkinesis = 100-abs(100-OcularSynkinesis)
+        
+        StaticScore = (score_brow_rest + score_PalpebralFissure_rest + score_OralCommissure_rest)/3
+        DynamicScore = (score_EyeBrowElevation+score_GentleEyeClosure+ score_FullEyeClosure+score_OralCommissureWithSmile+score_LowerLipEEE)/5
+        SynkinesisScore = score_OcularSynkinesis
+        
         self._StaticScore_measure.setText(str(np.round(StaticScore,1)))
         self._DynamicScore_measure.setText(str(np.round(DynamicScore,1)))
         self._SynkinesisScore_measure.setText(str(np.round(SynkinesisScore,1)))
         self._TotalScore_measure.setText(str(np.round((StaticScore + DynamicScore + SynkinesisScore)/3,1)))
-        
         #self.setFixedSize(self.size())
 
     def Cancel(self):
         #user doesn't want to continue, close this window
         self.close()  
 
+        
+        
+    def UpdateScores(self):
+        
+        # this function updates the scores when the individual values are modified
+        
+        Brow_at_rest = float(self._RestingBrow_measure.text())
+        PalpebralFissure_at_rest = float(self._RestingPalpebralFissure_measure.text())
+        OralCommissure_at_rest = float(self._OralCommissureatRest_measure.text())
+        
+   
+        EyeBrowElevation = float(self._BrowElevation_measure.text())
+        GentleEyeClosure = float(self._GentleEyeClosure_measure.text())
+        FullEyeClosure = float(self._FullEyeClosure_measure.text())
+        OralCommissureWithSmile = float(self._OralCommissureMovementwithSmile_measure.text())
+        LowerLipEEE = float(self._LowerLipMovement_measure.text())
+        OcularSynkinesis = float(self._OcularSynkenisis_measure.text())
+        
+        score_brow_rest = 100 - abs(100-Brow_at_rest)
+        score_PalpebralFissure_rest = 100 - abs(100-PalpebralFissure_at_rest)
+        score_OralCommissure_rest = 100 - abs(100-OralCommissure_at_rest)
+        score_EyeBrowElevation = 100-abs(100-EyeBrowElevation)
+        score_GentleEyeClosure = 100-abs(100-GentleEyeClosure)
+        score_FullEyeClosure = 100- abs(100-FullEyeClosure)
+        score_OralCommissureWithSmile = 100 - abs(100-OralCommissureWithSmile)
+        score_LowerLipEEE = 100 - abs(100-LowerLipEEE)
+        score_OcularSynkinesis = 100-abs(100-OcularSynkinesis)
+        
+        StaticScore = (score_brow_rest + score_PalpebralFissure_rest + score_OralCommissure_rest)/3
+        DynamicScore = (score_EyeBrowElevation+score_GentleEyeClosure+ score_FullEyeClosure+score_OralCommissureWithSmile+score_LowerLipEEE)/5
+        SynkinesisScore = score_OcularSynkinesis
+        
+        self._StaticScore_measure.setText(str(np.round(StaticScore,1)))
+        self._DynamicScore_measure.setText(str(np.round(DynamicScore,1)))
+        self._SynkinesisScore_measure.setText(str(np.round(SynkinesisScore,1)))
+        self._TotalScore_measure.setText(str(np.round((StaticScore + DynamicScore + SynkinesisScore)/3,1)))
+        
+        
         
     def Done(self):
         #all is done, close this window and return to the main window 
