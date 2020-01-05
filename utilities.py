@@ -8,7 +8,7 @@ import os
 import numpy as np
 import cv2
 from scipy import linalg
-import pandas as pd
+#import pandas as pd
 
 #from dlib import get_frontal_face_detector
 #from dlib import shape_predictor
@@ -553,136 +553,136 @@ def save_txt_file(file_name,shape,circle_left,circle_right, boundingbox):
     os.remove(file_no_ext + '_temp_circle_right.txt')
     os.remove(file_no_ext + '_temp_boundingbox.txt')
     
-def save_xls_file(file_name, MeasurementsLeft, MeasurementsRight, MeasurementsDeviation, MeasurementsPercentual):
-    #saves the facial metrics into a xls file. It works only for a single photo
-    
-    file_no_ext=file_name[0:-4]
-    delimiter = os.path.sep
-    temp=file_name.split(delimiter)
-    photo_name=temp[-1]
-    
-    number_of_measurements = 9
-    Columns = ['Right','Left','Deviation (absolute)','Deviation (percent)']
-    Columns = Columns * number_of_measurements
-    
-    temp = ['Brow Height', 'Marginal Reflex Distance 1', 'Marginal Reflex Distance 2', 
-            'Commisure Excursion', 'Commisure Height Deviation', 'Smile Angle',
-            'Upper Lip Height Deviation', 'Dental Show', 'Lower Lip Height Deviation']
-    number_of_repetitions=4
-    Header = [item for item in temp for i in range(number_of_repetitions)]
-    
-    
-    elements = ['BH', 'MRD1', 'MRD2', 'CE', 'CH', 'SA', 'UVH', 'DS', 'LVH']
-    BH = np.array([[MeasurementsRight.BrowHeight,MeasurementsLeft.BrowHeight,MeasurementsDeviation.BrowHeight,MeasurementsPercentual.BrowHeight]],dtype=object)
-    MRD1 = np.array([[MeasurementsRight.MarginalReflexDistance1, MeasurementsLeft.MarginalReflexDistance1,MeasurementsDeviation.MarginalReflexDistance1,MeasurementsPercentual.MarginalReflexDistance1]], dtype=object)
-    MRD2 = np.array([[MeasurementsRight.MarginalReflexDistance2, MeasurementsLeft.MarginalReflexDistance2,MeasurementsDeviation.MarginalReflexDistance2,MeasurementsPercentual.MarginalReflexDistance2]],dtype=object)
-    CE = np.array([[MeasurementsRight.CommissureExcursion, MeasurementsLeft.CommissureExcursion,MeasurementsDeviation.CommissureExcursion,MeasurementsPercentual.CommissureExcursion]],dtype=object)
-    CH = np.array([['', '',MeasurementsDeviation.CommisureHeightDeviation,'']],dtype=object)
-    SA = np.array([[MeasurementsRight.SmileAngle, MeasurementsLeft.SmileAngle,MeasurementsDeviation.SmileAngle,MeasurementsPercentual.SmileAngle]],dtype=object)
-    UVH = np.array([['', '',MeasurementsDeviation.UpperLipHeightDeviation,'']],dtype=object)
-    DS = np.array([[MeasurementsRight.DentalShow, MeasurementsLeft.DentalShow,MeasurementsDeviation.DentalShow,MeasurementsPercentual.DentalShow]],dtype=object)
-    LVH = np.array([['', '',MeasurementsDeviation.LowerLipHeightDeviation,'']],dtype=object)
-    
-    
-    
-    fill=BH
-    for i in elements:
-        if i is not 'BH':
-            fill = np.append(fill, eval(i), axis = 1)
-    
-    
-    
-    Index = [photo_name]
-    
-    
-    df = pd.DataFrame(fill, index = Index, columns = Columns)
-    df.columns = pd.MultiIndex.from_tuples(list(zip(Header,df.columns)))
-    
-    
-    df.to_excel(file_no_ext+'.xlsx',index = True)
-    
-
-def save_xls_file_patient(path,Patient,CalibrationType,CalibrationValue):
-    #saves the facial metrics into a xls file. It works only for a patient (two photos)
-    
-    
-    number_of_measurements = 9
-    Columns = ['Right','Left','Deviation (absolute)','Deviation (percent)']
-    Columns = Columns * number_of_measurements
-    
-    temp = ['Brow Height', 'Marginal Reflex Distance 1', 'Marginal Reflex Distance 2', 
-            'Commisure Excursion', 'Commisure Height Deviation', 'Smile Angle',
-            'Upper Lip Height Deviation', 'Dental Show', 'Lower Lip Height Deviation']
-    number_of_repetitions=4
-    Header = [item for item in temp for i in range(number_of_repetitions)]
-    
-    elements = ['BH', 'MRD1', 'MRD2', 'CE', 'CH', 'SA', 'UVH', 'DS', 'LVH']
-    #first photo
-    MeasurementsLeftFirst, MeasurementsRightFirst, MeasurementsDeviation, MeasurementsPercentual = get_measurements_from_data(Patient.FirstPhoto._shape,Patient.FirstPhoto._lefteye,Patient.FirstPhoto._righteye,CalibrationType,CalibrationValue)
-    
-    BH = np.array([[MeasurementsRightFirst.BrowHeight,MeasurementsLeftFirst.BrowHeight,MeasurementsDeviation.BrowHeight,MeasurementsPercentual.BrowHeight]],dtype=object)
-    MRD1 = np.array([[MeasurementsRightFirst.MarginalReflexDistance1, MeasurementsLeftFirst.MarginalReflexDistance1,MeasurementsDeviation.MarginalReflexDistance1,MeasurementsPercentual.MarginalReflexDistance1]], dtype=object)
-    MRD2 = np.array([[MeasurementsRightFirst.MarginalReflexDistance2, MeasurementsLeftFirst.MarginalReflexDistance2,MeasurementsDeviation.MarginalReflexDistance2,MeasurementsPercentual.MarginalReflexDistance2]],dtype=object)
-    CE = np.array([[MeasurementsRightFirst.CommissureExcursion, MeasurementsLeftFirst.CommissureExcursion,MeasurementsDeviation.CommissureExcursion,MeasurementsPercentual.CommissureExcursion]],dtype=object)
-    CH = np.array([['', '',MeasurementsDeviation.CommisureHeightDeviation,'']],dtype=object)
-    SA = np.array([[MeasurementsRightFirst.SmileAngle, MeasurementsLeftFirst.SmileAngle,MeasurementsDeviation.SmileAngle,MeasurementsPercentual.SmileAngle]],dtype=object)
-    UVH = np.array([['', '',MeasurementsDeviation.UpperLipHeightDeviation,'']],dtype=object)
-    DS = np.array([[MeasurementsRightFirst.DentalShow, MeasurementsLeftFirst.DentalShow,MeasurementsDeviation.DentalShow,MeasurementsPercentual.DentalShow]],dtype=object)
-    LVH = np.array([['', '',MeasurementsDeviation.LowerLipHeightDeviation,'']],dtype=object)
-        
-    fillFirst=BH
-    for i in elements:
-        if i is not 'BH':
-            fillFirst = np.append(fillFirst, eval(i), axis = 1)
-            
-    #Second photo
-    MeasurementsLeftSecond, MeasurementsRightSecond, MeasurementsDeviation, MeasurementsPercentual = get_measurements_from_data(Patient.SecondPhoto._shape,Patient.SecondPhoto._lefteye,Patient.SecondPhoto._righteye,CalibrationType,CalibrationValue)
-    
-    BH = np.array([[MeasurementsRightSecond.BrowHeight,MeasurementsLeftSecond.BrowHeight,MeasurementsDeviation.BrowHeight,MeasurementsPercentual.BrowHeight]],dtype=object)
-    MRD1 = np.array([[MeasurementsRightSecond.MarginalReflexDistance1, MeasurementsLeftSecond.MarginalReflexDistance1,MeasurementsDeviation.MarginalReflexDistance1,MeasurementsPercentual.MarginalReflexDistance1]], dtype=object)
-    MRD2 = np.array([[MeasurementsRightSecond.MarginalReflexDistance2, MeasurementsLeftSecond.MarginalReflexDistance2,MeasurementsDeviation.MarginalReflexDistance2,MeasurementsPercentual.MarginalReflexDistance2]],dtype=object)
-    CE = np.array([[MeasurementsRightSecond.CommissureExcursion, MeasurementsLeftSecond.CommissureExcursion,MeasurementsDeviation.CommissureExcursion,MeasurementsPercentual.CommissureExcursion]],dtype=object)
-    CH = np.array([['', '',MeasurementsDeviation.CommisureHeightDeviation,'']],dtype=object)
-    SA = np.array([[MeasurementsRightSecond.SmileAngle, MeasurementsLeftSecond.SmileAngle,MeasurementsDeviation.SmileAngle,MeasurementsPercentual.SmileAngle]],dtype=object)
-    UVH = np.array([['', '',MeasurementsDeviation.UpperLipHeightDeviation,'']],dtype=object)
-    DS = np.array([[MeasurementsRightSecond.DentalShow, MeasurementsLeftSecond.DentalShow,MeasurementsDeviation.DentalShow,MeasurementsPercentual.DentalShow]],dtype=object)
-    LVH = np.array([['', '',MeasurementsDeviation.LowerLipHeightDeviation,'']],dtype=object)
-        
-    fillSecond=BH
-    for i in elements:
-        if i is not 'BH':
-            fillSecond = np.append(fillSecond, eval(i), axis = 1)
-            
-    #difference       
-    BH = np.array([[MeasurementsRightFirst.BrowHeight-MeasurementsRightSecond.BrowHeight,MeasurementsLeftFirst.BrowHeight-MeasurementsLeftSecond.BrowHeight,'','']],dtype=object)
-    MRD1 = np.array([[MeasurementsRightFirst.MarginalReflexDistance1-MeasurementsRightSecond.MarginalReflexDistance1, MeasurementsLeftFirst.MarginalReflexDistance1-MeasurementsLeftSecond.MarginalReflexDistance1,'','']], dtype=object)
-    MRD2 = np.array([[MeasurementsRightFirst.MarginalReflexDistance2-MeasurementsRightSecond.MarginalReflexDistance2, MeasurementsLeftFirst.MarginalReflexDistance2-MeasurementsLeftSecond.MarginalReflexDistance2,'','']],dtype=object)
-    CE = np.array([[MeasurementsRightFirst.CommissureExcursion-MeasurementsRightSecond.CommissureExcursion,MeasurementsLeftFirst.CommissureExcursion-MeasurementsLeftSecond.CommissureExcursion,'','']],dtype=object)
-    CH = np.array([['', '','','']],dtype=object)
-    SA = np.array([[MeasurementsRightFirst.SmileAngle-MeasurementsRightSecond.SmileAngle, MeasurementsLeftFirst.SmileAngle-MeasurementsLeftSecond.SmileAngle,'','']],dtype=object)
-    UVH = np.array([['', '','','']],dtype=object)
-    DS = np.array([[MeasurementsRightFirst.DentalShow-MeasurementsRightSecond.DentalShow,MeasurementsLeftFirst.DentalShow-MeasurementsLeftSecond.DentalShow,'','']],dtype=object)
-    LVH = np.array([['', '','','']],dtype=object)
-        
-    fillDifference=BH
-    for i in elements:
-        if i is not 'BH':
-            fillDifference = np.append(fillDifference, eval(i), axis = 1)
-    
-  
-    
-    Index = [Patient.FirstPhoto._ID, Patient.SecondPhoto._ID, 'Difference']
-
-    df = pd.DataFrame(np.vstack((fillFirst, fillSecond, fillDifference)), index = Index, columns = Columns)
-    df.columns = pd.MultiIndex.from_tuples(list(zip(Header,df.columns)))
-    
-    
-    
-    delimiter = os.path.sep
-    temp=path.split(delimiter)
-    path=temp[:-1]
-    path=delimiter.join(path)
-
-    file_name = path + delimiter + Patient.patient_ID +'.xlsx'
-    #print(file_name)
-    df.to_excel(file_name,index = True)
+#def save_xls_file(file_name, MeasurementsLeft, MeasurementsRight, MeasurementsDeviation, MeasurementsPercentual):
+#    #saves the facial metrics into a xls file. It works only for a single photo
+#    
+#    file_no_ext=file_name[0:-4]
+#    delimiter = os.path.sep
+#    temp=file_name.split(delimiter)
+#    photo_name=temp[-1]
+#    
+#    number_of_measurements = 9
+#    Columns = ['Right','Left','Deviation (absolute)','Deviation (percent)']
+#    Columns = Columns * number_of_measurements
+#    
+#    temp = ['Brow Height', 'Marginal Reflex Distance 1', 'Marginal Reflex Distance 2', 
+#            'Commisure Excursion', 'Commisure Height Deviation', 'Smile Angle',
+#            'Upper Lip Height Deviation', 'Dental Show', 'Lower Lip Height Deviation']
+#    number_of_repetitions=4
+#    Header = [item for item in temp for i in range(number_of_repetitions)]
+#    
+#    
+#    elements = ['BH', 'MRD1', 'MRD2', 'CE', 'CH', 'SA', 'UVH', 'DS', 'LVH']
+#    BH = np.array([[MeasurementsRight.BrowHeight,MeasurementsLeft.BrowHeight,MeasurementsDeviation.BrowHeight,MeasurementsPercentual.BrowHeight]],dtype=object)
+#    MRD1 = np.array([[MeasurementsRight.MarginalReflexDistance1, MeasurementsLeft.MarginalReflexDistance1,MeasurementsDeviation.MarginalReflexDistance1,MeasurementsPercentual.MarginalReflexDistance1]], dtype=object)
+#    MRD2 = np.array([[MeasurementsRight.MarginalReflexDistance2, MeasurementsLeft.MarginalReflexDistance2,MeasurementsDeviation.MarginalReflexDistance2,MeasurementsPercentual.MarginalReflexDistance2]],dtype=object)
+#    CE = np.array([[MeasurementsRight.CommissureExcursion, MeasurementsLeft.CommissureExcursion,MeasurementsDeviation.CommissureExcursion,MeasurementsPercentual.CommissureExcursion]],dtype=object)
+#    CH = np.array([['', '',MeasurementsDeviation.CommisureHeightDeviation,'']],dtype=object)
+#    SA = np.array([[MeasurementsRight.SmileAngle, MeasurementsLeft.SmileAngle,MeasurementsDeviation.SmileAngle,MeasurementsPercentual.SmileAngle]],dtype=object)
+#    UVH = np.array([['', '',MeasurementsDeviation.UpperLipHeightDeviation,'']],dtype=object)
+#    DS = np.array([[MeasurementsRight.DentalShow, MeasurementsLeft.DentalShow,MeasurementsDeviation.DentalShow,MeasurementsPercentual.DentalShow]],dtype=object)
+#    LVH = np.array([['', '',MeasurementsDeviation.LowerLipHeightDeviation,'']],dtype=object)
+#    
+#    
+#    
+#    fill=BH
+#    for i in elements:
+#        if i is not 'BH':
+#            fill = np.append(fill, eval(i), axis = 1)
+#    
+#    
+#    
+#    Index = [photo_name]
+#    
+#    
+#    df = pd.DataFrame(fill, index = Index, columns = Columns)
+#    df.columns = pd.MultiIndex.from_tuples(list(zip(Header,df.columns)))
+#    
+#    
+#    df.to_excel(file_no_ext+'.xlsx',index = True)
+#    
+#
+#def save_xls_file_patient(path,Patient,CalibrationType,CalibrationValue):
+#    #saves the facial metrics into a xls file. It works only for a patient (two photos)
+#    
+#    
+#    number_of_measurements = 9
+#    Columns = ['Right','Left','Deviation (absolute)','Deviation (percent)']
+#    Columns = Columns * number_of_measurements
+#    
+#    temp = ['Brow Height', 'Marginal Reflex Distance 1', 'Marginal Reflex Distance 2', 
+#            'Commisure Excursion', 'Commisure Height Deviation', 'Smile Angle',
+#            'Upper Lip Height Deviation', 'Dental Show', 'Lower Lip Height Deviation']
+#    number_of_repetitions=4
+#    Header = [item for item in temp for i in range(number_of_repetitions)]
+#    
+#    elements = ['BH', 'MRD1', 'MRD2', 'CE', 'CH', 'SA', 'UVH', 'DS', 'LVH']
+#    #first photo
+#    MeasurementsLeftFirst, MeasurementsRightFirst, MeasurementsDeviation, MeasurementsPercentual = get_measurements_from_data(Patient.FirstPhoto._shape,Patient.FirstPhoto._lefteye,Patient.FirstPhoto._righteye,CalibrationType,CalibrationValue)
+#    
+#    BH = np.array([[MeasurementsRightFirst.BrowHeight,MeasurementsLeftFirst.BrowHeight,MeasurementsDeviation.BrowHeight,MeasurementsPercentual.BrowHeight]],dtype=object)
+#    MRD1 = np.array([[MeasurementsRightFirst.MarginalReflexDistance1, MeasurementsLeftFirst.MarginalReflexDistance1,MeasurementsDeviation.MarginalReflexDistance1,MeasurementsPercentual.MarginalReflexDistance1]], dtype=object)
+#    MRD2 = np.array([[MeasurementsRightFirst.MarginalReflexDistance2, MeasurementsLeftFirst.MarginalReflexDistance2,MeasurementsDeviation.MarginalReflexDistance2,MeasurementsPercentual.MarginalReflexDistance2]],dtype=object)
+#    CE = np.array([[MeasurementsRightFirst.CommissureExcursion, MeasurementsLeftFirst.CommissureExcursion,MeasurementsDeviation.CommissureExcursion,MeasurementsPercentual.CommissureExcursion]],dtype=object)
+#    CH = np.array([['', '',MeasurementsDeviation.CommisureHeightDeviation,'']],dtype=object)
+#    SA = np.array([[MeasurementsRightFirst.SmileAngle, MeasurementsLeftFirst.SmileAngle,MeasurementsDeviation.SmileAngle,MeasurementsPercentual.SmileAngle]],dtype=object)
+#    UVH = np.array([['', '',MeasurementsDeviation.UpperLipHeightDeviation,'']],dtype=object)
+#    DS = np.array([[MeasurementsRightFirst.DentalShow, MeasurementsLeftFirst.DentalShow,MeasurementsDeviation.DentalShow,MeasurementsPercentual.DentalShow]],dtype=object)
+#    LVH = np.array([['', '',MeasurementsDeviation.LowerLipHeightDeviation,'']],dtype=object)
+#        
+#    fillFirst=BH
+#    for i in elements:
+#        if i is not 'BH':
+#            fillFirst = np.append(fillFirst, eval(i), axis = 1)
+#            
+#    #Second photo
+#    MeasurementsLeftSecond, MeasurementsRightSecond, MeasurementsDeviation, MeasurementsPercentual = get_measurements_from_data(Patient.SecondPhoto._shape,Patient.SecondPhoto._lefteye,Patient.SecondPhoto._righteye,CalibrationType,CalibrationValue)
+#    
+#    BH = np.array([[MeasurementsRightSecond.BrowHeight,MeasurementsLeftSecond.BrowHeight,MeasurementsDeviation.BrowHeight,MeasurementsPercentual.BrowHeight]],dtype=object)
+#    MRD1 = np.array([[MeasurementsRightSecond.MarginalReflexDistance1, MeasurementsLeftSecond.MarginalReflexDistance1,MeasurementsDeviation.MarginalReflexDistance1,MeasurementsPercentual.MarginalReflexDistance1]], dtype=object)
+#    MRD2 = np.array([[MeasurementsRightSecond.MarginalReflexDistance2, MeasurementsLeftSecond.MarginalReflexDistance2,MeasurementsDeviation.MarginalReflexDistance2,MeasurementsPercentual.MarginalReflexDistance2]],dtype=object)
+#    CE = np.array([[MeasurementsRightSecond.CommissureExcursion, MeasurementsLeftSecond.CommissureExcursion,MeasurementsDeviation.CommissureExcursion,MeasurementsPercentual.CommissureExcursion]],dtype=object)
+#    CH = np.array([['', '',MeasurementsDeviation.CommisureHeightDeviation,'']],dtype=object)
+#    SA = np.array([[MeasurementsRightSecond.SmileAngle, MeasurementsLeftSecond.SmileAngle,MeasurementsDeviation.SmileAngle,MeasurementsPercentual.SmileAngle]],dtype=object)
+#    UVH = np.array([['', '',MeasurementsDeviation.UpperLipHeightDeviation,'']],dtype=object)
+#    DS = np.array([[MeasurementsRightSecond.DentalShow, MeasurementsLeftSecond.DentalShow,MeasurementsDeviation.DentalShow,MeasurementsPercentual.DentalShow]],dtype=object)
+#    LVH = np.array([['', '',MeasurementsDeviation.LowerLipHeightDeviation,'']],dtype=object)
+#        
+#    fillSecond=BH
+#    for i in elements:
+#        if i is not 'BH':
+#            fillSecond = np.append(fillSecond, eval(i), axis = 1)
+#            
+#    #difference       
+#    BH = np.array([[MeasurementsRightFirst.BrowHeight-MeasurementsRightSecond.BrowHeight,MeasurementsLeftFirst.BrowHeight-MeasurementsLeftSecond.BrowHeight,'','']],dtype=object)
+#    MRD1 = np.array([[MeasurementsRightFirst.MarginalReflexDistance1-MeasurementsRightSecond.MarginalReflexDistance1, MeasurementsLeftFirst.MarginalReflexDistance1-MeasurementsLeftSecond.MarginalReflexDistance1,'','']], dtype=object)
+#    MRD2 = np.array([[MeasurementsRightFirst.MarginalReflexDistance2-MeasurementsRightSecond.MarginalReflexDistance2, MeasurementsLeftFirst.MarginalReflexDistance2-MeasurementsLeftSecond.MarginalReflexDistance2,'','']],dtype=object)
+#    CE = np.array([[MeasurementsRightFirst.CommissureExcursion-MeasurementsRightSecond.CommissureExcursion,MeasurementsLeftFirst.CommissureExcursion-MeasurementsLeftSecond.CommissureExcursion,'','']],dtype=object)
+#    CH = np.array([['', '','','']],dtype=object)
+#    SA = np.array([[MeasurementsRightFirst.SmileAngle-MeasurementsRightSecond.SmileAngle, MeasurementsLeftFirst.SmileAngle-MeasurementsLeftSecond.SmileAngle,'','']],dtype=object)
+#    UVH = np.array([['', '','','']],dtype=object)
+#    DS = np.array([[MeasurementsRightFirst.DentalShow-MeasurementsRightSecond.DentalShow,MeasurementsLeftFirst.DentalShow-MeasurementsLeftSecond.DentalShow,'','']],dtype=object)
+#    LVH = np.array([['', '','','']],dtype=object)
+#        
+#    fillDifference=BH
+#    for i in elements:
+#        if i is not 'BH':
+#            fillDifference = np.append(fillDifference, eval(i), axis = 1)
+#    
+#  
+#    
+#    Index = [Patient.FirstPhoto._ID, Patient.SecondPhoto._ID, 'Difference']
+#
+#    df = pd.DataFrame(np.vstack((fillFirst, fillSecond, fillDifference)), index = Index, columns = Columns)
+#    df.columns = pd.MultiIndex.from_tuples(list(zip(Header,df.columns)))
+#    
+#    
+#    
+#    delimiter = os.path.sep
+#    temp=path.split(delimiter)
+#    path=temp[:-1]
+#    path=delimiter.join(path)
+#
+#    file_name = path + delimiter + Patient.patient_ID +'.xlsx'
+#    #print(file_name)
+#    df.to_excel(file_name,index = True)

@@ -823,7 +823,39 @@ class window(QtWidgets.QWidget):
             
     def report_card(self):
         
-        if self._Rest._shape is None or self._SmallSmile._shape is None or self._LargeSmile._shape is None or self._EyeBrow._shape is None or self._EyeClosureGently._shape is None or self._EyeClosureTight._shape is None or self._DentalShow._shape is None:
+#        if self._Rest._shape is None or self._SmallSmile._shape is None or self._LargeSmile._shape is None or self._EyeBrow._shape is None or self._EyeClosureGently._shape is None or self._EyeClosureTight._shape is None or self._DentalShow._shape is None:
+#            
+#            QtWidgets.QMessageBox.warning(self,"Warning",
+#                    "Landmark information from some images is still missing.\nDouble click in a photograph to estimate the landmarks.",
+#                        QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.NoButton)
+#        
+#        else:
+#            #lets update the information about all the photos and pass it to 
+#            #the part of the program that will do all the calculations 
+#            self._Patient._Rest = self._Rest
+#            self._Patient._SmallSmile = self._SmallSmile
+#            self._Patient._LargeSmile = self._LargeSmile
+#            self._Patient._EyeBrow = self._EyeBrow
+#            self._Patient._EyeClosureGently = self._EyeClosureGently
+#            self._Patient._EyeClosureTight = self._EyeClosureTight
+#            self._Patient._PuckeringLips = self._PuckeringLips
+#            self._Patient._DentalShow = self._DentalShow
+#            
+#            self._Patient._CalibrationType = self._CalibrationType
+#            self._Patient._CalibrationValue = self._CalibrationValue
+#            self._Patient._ModelName = self._ModelName
+#            
+#         
+#            
+#            ReportC = ReportCardInit(self._Patient)
+#            ReportC.exec_()
+            
+            
+    # I modified this function on 1/4/2020 to reflect the fact that the program doesn't need the SmallSmilePhoto 
+    # code before this comment uses requires the information for the SmallSmilePhoto
+    
+        #if self._Rest._shape is None or self._SmallSmile._shape is None or self._LargeSmile._shape is None or self._EyeBrow._shape is None or self._EyeClosureGently._shape is None or self._EyeClosureTight._shape is None or self._DentalShow._shape is None:
+        if self._Rest._shape is None or self._LargeSmile._shape is None or self._EyeBrow._shape is None or self._EyeClosureGently._shape is None or self._EyeClosureTight._shape is None or self._DentalShow._shape is None:
             
             QtWidgets.QMessageBox.warning(self,"Warning",
                     "Landmark information from some images is still missing.\nDouble click in a photograph to estimate the landmarks.",
@@ -833,7 +865,7 @@ class window(QtWidgets.QWidget):
             #lets update the information about all the photos and pass it to 
             #the part of the program that will do all the calculations 
             self._Patient._Rest = self._Rest
-            self._Patient._SmallSmile = self._SmallSmile
+            #self._Patient._SmallSmile = self._SmallSmile
             self._Patient._LargeSmile = self._LargeSmile
             self._Patient._EyeBrow = self._EyeBrow
             self._Patient._EyeClosureGently = self._EyeClosureGently
