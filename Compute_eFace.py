@@ -57,7 +57,7 @@ def Compute_eFace(Patient):
 
     LeftRest, RightRest, _ , _ ,IPrest = get_measurements_from_data(Patient._Rest._shape, Patient._Rest._lefteye, Patient._Rest._righteye, Patient._CalibrationType, Patient._CalibrationValue)
 
-    LeftSmallSmile, RightSmallSmile, _, _, IPSmallSmile = get_measurements_from_data(Patient._SmallSmile._shape, Patient._SmallSmile._lefteye, Patient._SmallSmile._righteye, Patient._CalibrationType, Patient._CalibrationValue)
+   # LeftSmallSmile, RightSmallSmile, _, _, IPSmallSmile = get_measurements_from_data(Patient._SmallSmile._shape, Patient._SmallSmile._lefteye, Patient._SmallSmile._righteye, Patient._CalibrationType, Patient._CalibrationValue)
 
     LeftLargeSmile, RightLargeSmile, _, _, IPLargeSmile = get_measurements_from_data(Patient._LargeSmile._shape, Patient._LargeSmile._lefteye, Patient._LargeSmile._righteye, Patient._CalibrationType, Patient._CalibrationValue)
 
