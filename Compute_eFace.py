@@ -793,17 +793,17 @@ class ReportCard(QDialog):
         
         # this function updates the scores when the individual values are modified
         
-        Brow_at_rest = float(self._RestingBrow_measure.text())
-        PalpebralFissure_at_rest = float(self._RestingPalpebralFissure_measure.text())
-        OralCommissure_at_rest = float(self._OralCommissureatRest_measure.text())
+        Brow_at_rest = float(self._RestingBrow_measure.text()) if self._RestingBrow_measure.text() != '' else 0 
+        PalpebralFissure_at_rest = float(self._RestingPalpebralFissure_measure.text()) if self._RestingPalpebralFissure_measure.text() != '' else 0 
+        OralCommissure_at_rest = float(self._OralCommissureatRest_measure.text()) if self._OralCommissureatRest_measure.text() != '' else 0 
         
    
-        EyeBrowElevation = float(self._BrowElevation_measure.text())
-        GentleEyeClosure = float(self._GentleEyeClosure_measure.text())
-        FullEyeClosure = float(self._FullEyeClosure_measure.text())
-        OralCommissureWithSmile = float(self._OralCommissureMovementwithSmile_measure.text())
-        LowerLipEEE = float(self._LowerLipMovement_measure.text())
-        OcularSynkinesis = float(self._OcularSynkenisis_measure.text())
+        EyeBrowElevation = float(self._BrowElevation_measure.text()) if self._BrowElevation_measure.text() != '' else 0 
+        GentleEyeClosure = float(self._GentleEyeClosure_measure.text()) if self._GentleEyeClosure_measure.text() != '' else 0 
+        FullEyeClosure = float(self._FullEyeClosure_measure.text()) if self._FullEyeClosure_measure.text() != '' else 0 
+        OralCommissureWithSmile = float(self._OralCommissureMovementwithSmile_measure.text()) if self._OralCommissureMovementwithSmile_measure.text() != '' else 0 
+        LowerLipEEE = float(self._LowerLipMovement_measure.text()) if self._LowerLipMovement_measure.text() != '' else 0 
+        OcularSynkinesis = float(self._OcularSynkenisis_measure.text()) if self._OcularSynkenisis_measure.text() != '' else 0 
         
         score_brow_rest = 100 - abs(100-Brow_at_rest)
         score_PalpebralFissure_rest = 100 - abs(100-PalpebralFissure_at_rest)
