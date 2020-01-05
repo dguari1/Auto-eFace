@@ -3,8 +3,8 @@
 block_cipher = None
 
 
-a = Analysis(['Auto-eFACE.py'],
-             pathex=['C:\\Users\\GuarinD\\Documents\\GitHub\\Auto-eFace'],
+a = Analysis(['Auto-eFACE', '-', 'laptop.spec'],
+             pathex=['C:\\Users\\guarind\\Documents\\GitHub\\Auto-eFace'],
              binaries=[],
              datas=[],
              hiddenimports=[],

@@ -21,8 +21,8 @@ from measurements import get_measurements_from_data
 #matplotlib.use('QT5Agg')
 
 
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-import matplotlib.pyplot as plt
+#from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+#import matplotlib.pyplot as plt
 
 
 def palpebral_fissure(photograph, CalibrationType, CalibrationValue):
@@ -153,6 +153,7 @@ def Compute_eFace(Patient):
     h_left, h_right = LeftLargeSmile.CommissureExcursion, RightLargeSmile.CommissureExcursion
     #if with small smile, then comment above line an uncomment line below
     # h_left, h_right = LeftSmallSmile.CommissureExcursion, RightSmallSmile.CommissureExcursion
+    print(f_left, f_right,h_left, h_right)
     if Patient._HealthySide == 'Right':
         OralCommissureWithSmile =  (h_left - f_left)/(h_right - f_right)
     else:
@@ -233,9 +234,10 @@ def Compute_eFace(Patient):
     SynkinesisScore = score_OcularSynkinesis
     
     
-   
+    return Brow_at_rest, PalpebralFissure_at_rest, OralCommissure_at_rest, EyeBrowElevation, GentleEyeClosure, FullEyeClosure, OralCommissureWithSmile, LowerLipEEE, OcularSynkinesis, StaticScore, DynamicScore, SynkinesisScore
+
     
-    return Brow_at_rest, PalpebralFissure_at_rest, OralCommissure_at_rest, score_EyeBrowElevation, score_GentleEyeClosure, score_FullEyeClosure, score_OralCommissureWithSmile, score_LowerLipEEE, score_OcularSynkinesis, StaticScore, DynamicScore, SynkinesisScore
+    #return Brow_at_rest, PalpebralFissure_at_rest, OralCommissure_at_rest, score_EyeBrowElevation, score_GentleEyeClosure, score_FullEyeClosure, score_OralCommissureWithSmile, score_LowerLipEEE, score_OcularSynkinesis, StaticScore, DynamicScore, SynkinesisScore
 
 #    #Brow at Rest
 #    if Patient._HealthySide == 'Right':
