@@ -71,7 +71,7 @@ class Patient(object):
         
         self._CalibrationType='Iris'
         self._CalibrationValue=11.77
-        self._ModelName = 'iBUG' 
+        self._ModelName = 'MEE' 
     
 
 class window(QtWidgets.QWidget):
@@ -87,7 +87,7 @@ class window(QtWidgets.QWidget):
         self._CalibrationType = 'Iris'  #_CalibrationType can be 'Iris' or 'Manual'
         self._CalibrationValue = 11.77 #calibration parameter
         
-        self._ModelName = 'iBUG' #_ModelType can be 'iBUGS' or 'MEE'
+        self._ModelName = 'MEE' #_ModelType can be 'iBUGS' or 'MEE'
         
         
         
