@@ -193,7 +193,7 @@ def Compute_eFace(Patient):
         OcularSynkinesis1 = k1_right/k1_left
         OcularSynkinesis2 = k2_right/k2_left
     
-    if  OcularSynkinesis1 <=  OcularSynkinesis2:
+    if OcularSynkinesis1 <=  OcularSynkinesis2:
          OcularSynkinesis =  OcularSynkinesis1 
     else:
          OcularSynkinesis =  OcularSynkinesis2
@@ -202,34 +202,45 @@ def Compute_eFace(Patient):
     
     
         #apply corrections to remove everything less than zero 
-    if Brow_at_rest<0:Brow_at_rest=0
-    if PalpebralFissure_at_rest<0:PalpebralFissure_at_rest=0
-    if OralCommissure_at_rest<0:OralCommissure_at_rest=0
-    if EyeBrowElevation<0:EyeBrowElevation=0
-    if GentleEyeClosure<0:GentleEyeClosure=0
-    if FullEyeClosure<0:FullEyeClosure=0
-    if OralCommissureWithSmile<0:OralCommissureWithSmile=0
-    if LowerLipEEE<0:LowerLipEEE=0
-    if OcularSynkinesis<0:OcularSynkinesis=0
+    if Brow_at_rest < 0: Brow_at_rest = 0
+    if Brow_at_rest > 200: Brow_at_rest = 200
+    if PalpebralFissure_at_rest < 0: PalpebralFissure_at_rest = 0
+    if PalpebralFissure_at_rest > 200: PalpebralFissure_at_rest = 200
+    if OralCommissure_at_rest > 200: OralCommissure_at_rest = 200
+
+    if OralCommissure_at_rest < 0: OralCommissure_at_rest = 0
+    if OralCommissure_at_rest > 100 : OralCommissure_at_rest = 100
+    if EyeBrowElevation < 0: EyeBrowElevation = 0
+    if EyeBrowElevation > 100: EyeBrowElevation = 100
+    if GentleEyeClosure < 0: GentleEyeClosure = 0
+    if GentleEyeClosure > 100: GentleEyeClosure = 100
+    if FullEyeClosure < 0: FullEyeClosure = 0
+    if FullEyeClosure > 100: FullEyeClosure = 100
+    if OralCommissureWithSmile <0: OralCommissureWithSmile = 0
+    if OralCommissureWithSmile >100: OralCommissureWithSmile = 100
+    if LowerLipEEE <0: LowerLipEEE = 0
+    if LowerLipEEE >100: LowerLipEEE = 100
+    if OcularSynkinesis <0: OcularSynkinesis = 0
+    if OcularSynkinesis >100: OcularSynkinesis = 100
     
     
     
-#    ##Computing the score based on Tessa's idea 
-#    if Brow_at_rest<= 100:
+    #Computing the score based on Tessa's idea
+
     score_brow_rest = 100 - abs(100-Brow_at_rest)
     score_PalpebralFissure_rest = 100 - abs(100-PalpebralFissure_at_rest)
     score_OralCommissure_rest = 100 - abs(100-OralCommissure_at_rest)
     
-    score_EyeBrowElevation = 100-abs(100-EyeBrowElevation)
-    score_GentleEyeClosure = 100-abs(100-GentleEyeClosure)
-    score_FullEyeClosure = 100- abs(100-FullEyeClosure)
-    score_OralCommissureWithSmile = 100 - abs(100-OralCommissureWithSmile)
-    score_LowerLipEEE = 100 - abs(100-LowerLipEEE)
+    score_EyeBrowElevation = EyeBrowElevation #100-abs(100-EyeBrowElevation)
+    score_GentleEyeClosure = GentleEyeClosure #100-abs(100-GentleEyeClosure)
+    score_FullEyeClosure = FullEyeClosure #100- abs(100-FullEyeClosure)
+    score_OralCommissureWithSmile = OralCommissureWithSmile #100 - abs(100-OralCommissureWithSmile)
+    score_LowerLipEEE = LowerLipEEE #100 - abs(100-LowerLipEEE)
     
-    score_OcularSynkinesis = 100-abs(100-OcularSynkinesis)
+    score_OcularSynkinesis = OcularSynkinesis #100-abs(100-OcularSynkinesis)
 
     StaticScore = (score_brow_rest + score_PalpebralFissure_rest + score_OralCommissure_rest)/3
-    DynamicScore = (score_EyeBrowElevation+score_GentleEyeClosure+ score_FullEyeClosure+score_OralCommissureWithSmile+score_LowerLipEEE)/5
+    DynamicScore = (score_EyeBrowElevation+score_GentleEyeClosure + score_FullEyeClosure+score_OralCommissureWithSmile + score_LowerLipEEE)/5
     SynkinesisScore = score_OcularSynkinesis
     
     
@@ -765,22 +776,26 @@ class ReportCard(QDialog):
         
         score_brow_rest = 100 - abs(100-Brow_at_rest)
         score_PalpebralFissure_rest = 100 - abs(100-PalpebralFissure_at_rest)
-        score_OralCommissure_rest = 100 - abs(100-OralCommissure_at_rest)
-        score_EyeBrowElevation = 100-abs(100-EyeBrowElevation)
-        score_GentleEyeClosure = 100-abs(100-GentleEyeClosure)
-        score_FullEyeClosure = 100- abs(100-FullEyeClosure)
-        score_OralCommissureWithSmile = 100 - abs(100-OralCommissureWithSmile)
-        score_LowerLipEEE = 100 - abs(100-LowerLipEEE)
-        score_OcularSynkinesis = 100-abs(100-OcularSynkinesis)
+        score_OralCommissure_rest = 100 - abs(100 - OralCommissure_at_rest)
+        score_EyeBrowElevation = EyeBrowElevation  # 100-abs(100-EyeBrowElevation)
+        score_GentleEyeClosure = GentleEyeClosure  # 100-abs(100-GentleEyeClosure)
+        score_FullEyeClosure = FullEyeClosure  # 100- abs(100-FullEyeClosure)
+        score_OralCommissureWithSmile = OralCommissureWithSmile  # 100 - abs(100-OralCommissureWithSmile)
+        score_LowerLipEEE = LowerLipEEE  # 100 - abs(100-LowerLipEEE)
+        score_OcularSynkinesis = OcularSynkinesis # 100-abs(100-OcularSynkinesis)
         
         StaticScore = (score_brow_rest + score_PalpebralFissure_rest + score_OralCommissure_rest)/3
         DynamicScore = (score_EyeBrowElevation+score_GentleEyeClosure+ score_FullEyeClosure+score_OralCommissureWithSmile+score_LowerLipEEE)/5
         SynkinesisScore = score_OcularSynkinesis
+
+        Total_Score = (score_brow_rest + score_PalpebralFissure_rest + score_OralCommissure_rest +
+                       score_EyeBrowElevation + score_GentleEyeClosure + score_FullEyeClosure + score_OralCommissureWithSmile + score_LowerLipEEE +
+                       score_OcularSynkinesis)/9
         
         self._StaticScore_measure.setText(str(np.round(StaticScore,1)))
         self._DynamicScore_measure.setText(str(np.round(DynamicScore,1)))
         self._SynkinesisScore_measure.setText(str(np.round(SynkinesisScore,1)))
-        self._TotalScore_measure.setText(str(np.round((StaticScore + DynamicScore + SynkinesisScore)/3,1)))
+        self._TotalScore_measure.setText(str(np.round(Total_Score,1)))
         #self.setFixedSize(self.size())
 
     def Cancel(self):
@@ -803,28 +818,32 @@ class ReportCard(QDialog):
         FullEyeClosure = float(self._FullEyeClosure_measure.text()) if self._FullEyeClosure_measure.text() != '' else 0 
         OralCommissureWithSmile = float(self._OralCommissureMovementwithSmile_measure.text()) if self._OralCommissureMovementwithSmile_measure.text() != '' else 0 
         LowerLipEEE = float(self._LowerLipMovement_measure.text()) if self._LowerLipMovement_measure.text() != '' else 0 
-        OcularSynkinesis = float(self._OcularSynkenisis_measure.text()) if self._OcularSynkenisis_measure.text() != '' else 0 
-        
-        score_brow_rest = 100 - abs(100-Brow_at_rest)
-        score_PalpebralFissure_rest = 100 - abs(100-PalpebralFissure_at_rest)
-        score_OralCommissure_rest = 100 - abs(100-OralCommissure_at_rest)
-        score_EyeBrowElevation = 100-abs(100-EyeBrowElevation)
-        score_GentleEyeClosure = 100-abs(100-GentleEyeClosure)
-        score_FullEyeClosure = 100- abs(100-FullEyeClosure)
-        score_OralCommissureWithSmile = 100 - abs(100-OralCommissureWithSmile)
-        score_LowerLipEEE = 100 - abs(100-LowerLipEEE)
-        score_OcularSynkinesis = 100-abs(100-OcularSynkinesis)
-        
-        StaticScore = (score_brow_rest + score_PalpebralFissure_rest + score_OralCommissure_rest)/3
-        DynamicScore = (score_EyeBrowElevation+score_GentleEyeClosure+ score_FullEyeClosure+score_OralCommissureWithSmile+score_LowerLipEEE)/5
+        OcularSynkinesis = float(self._OcularSynkenisis_measure.text()) if self._OcularSynkenisis_measure.text() != '' else 0
+
+        score_brow_rest = 100 - abs(100 - Brow_at_rest)
+        score_PalpebralFissure_rest = 100 - abs(100 - PalpebralFissure_at_rest)
+        score_OralCommissure_rest = 100 - abs(100 - OralCommissure_at_rest)
+        score_EyeBrowElevation = EyeBrowElevation  # 100-abs(100-EyeBrowElevation)
+        score_GentleEyeClosure = GentleEyeClosure  # 100-abs(100-GentleEyeClosure)
+        score_FullEyeClosure = FullEyeClosure  # 100- abs(100-FullEyeClosure)
+        score_OralCommissureWithSmile = OralCommissureWithSmile  # 100 - abs(100-OralCommissureWithSmile)
+        score_LowerLipEEE = LowerLipEEE  # 100 - abs(100-LowerLipEEE)
+        score_OcularSynkinesis = OcularSynkinesis  # 100-abs(100-OcularSynkinesis)
+
+        StaticScore = (score_brow_rest + score_PalpebralFissure_rest + score_OralCommissure_rest) / 3
+        DynamicScore = (
+                                   score_EyeBrowElevation + score_GentleEyeClosure + score_FullEyeClosure + score_OralCommissureWithSmile + score_LowerLipEEE) / 5
         SynkinesisScore = score_OcularSynkinesis
-        
-        self._StaticScore_measure.setText(str(np.round(StaticScore,1)))
-        self._DynamicScore_measure.setText(str(np.round(DynamicScore,1)))
-        self._SynkinesisScore_measure.setText(str(np.round(SynkinesisScore,1)))
-        self._TotalScore_measure.setText(str(np.round((StaticScore + DynamicScore + SynkinesisScore)/3,1)))
-        
-        
+
+        Total_Score = (score_brow_rest + score_PalpebralFissure_rest + score_OralCommissure_rest +
+                       score_EyeBrowElevation + score_GentleEyeClosure + score_FullEyeClosure + score_OralCommissureWithSmile + score_LowerLipEEE +
+                       score_OcularSynkinesis) / 9
+
+        self._StaticScore_measure.setText(str(np.round(StaticScore, 1)))
+        self._DynamicScore_measure.setText(str(np.round(DynamicScore, 1)))
+        self._SynkinesisScore_measure.setText(str(np.round(SynkinesisScore, 1)))
+        self._TotalScore_measure.setText(str(np.round(Total_Score, 1)))
+
         
     def Done(self):
         #all is done, close this window and return to the main window 
