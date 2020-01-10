@@ -1,0 +1,10 @@
+#create a python environment and install the following 
+
+conda install -c conda-forge opencv=4.2.0
+#this will install a bunch of other needed libraries 
+conda install -c conda-forge scipy
+conda install -c conda-forge pandas
+conda install -c conda-forge dlib
+pip install PyQt5
+#this one is important, it solves a bunch of issues with pyinstaller and pyqt 
+pip install https://github.com/pyinstaller/pyinstaller/tarball/develop

@@ -1,9 +1,9 @@
-# -*- mode: python ; coding: utf-8 -*-
+# -*- mode: python -*-
 
 block_cipher = None
 
 
-a = Analysis(['Auto-eFACE', '-', 'laptop.spec'],
+a = Analysis(['Auto-eFACE.py'],
              pathex=['C:\\Users\\guarind\\Documents\\GitHub\\Auto-eFace'],
              binaries=[],
              datas=[],
@@ -13,25 +13,21 @@ a = Analysis(['Auto-eFACE', '-', 'laptop.spec'],
              excludes=[],
              win_no_prefer_redirects=False,
              win_private_assemblies=False,
-             cipher=block_cipher,
-             noarchive=False)
+             cipher=block_cipher)
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
 exe = EXE(pyz,
           a.scripts,
-          [],
           exclude_binaries=True,
-          name='Auto-eFACE',
+          name='auto-eFACE',
           debug=False,
-          bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          console=True )
+          console=False, icon='meei_3WR_icon.ico' )
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
                a.datas,
                strip=False,
                upx=True,
-               upx_exclude=[],
-               name='Auto-eFACE')
+               name='auto-eFACE')
