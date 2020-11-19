@@ -201,14 +201,15 @@ def Compute_eFace(Patient):
     OcularSynkinesis = np.round(OcularSynkinesis*100,1)
     
     
-    #apply corrections to remove everything less than zero 
+        #apply corrections to remove everything less than zero 
     if Brow_at_rest < 0: Brow_at_rest = 0
     if Brow_at_rest > 200: Brow_at_rest = 200
     if PalpebralFissure_at_rest < 0: PalpebralFissure_at_rest = 0
     if PalpebralFissure_at_rest > 200: PalpebralFissure_at_rest = 200
-    if OralCommissure_at_rest < 0: OralCommissure_at_rest = 0
     if OralCommissure_at_rest > 200: OralCommissure_at_rest = 200
 
+    if OralCommissure_at_rest < 0: OralCommissure_at_rest = 0
+    if OralCommissure_at_rest > 100 : OralCommissure_at_rest = 100
     if EyeBrowElevation < 0: EyeBrowElevation = 0
     if EyeBrowElevation > 100: EyeBrowElevation = 100
     if GentleEyeClosure < 0: GentleEyeClosure = 0
